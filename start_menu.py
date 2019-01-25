@@ -10,7 +10,6 @@ FIGHTER_2_ENTRY = 8
 
 class StartMenu(tk.Frame):
 
-    test_player_data = {'p1': {'playernum': 1, 'name': 'Matt', 'colour': 'goldenrod', 'fighter1': 'Peach', 'fighter2': 'Captain Falcon'}, 'p2': {'playernum': 2, 'name': 'Joe', 'colour': 'red', 'fighter1': 'Ness', 'fighter2': 'Ness'}, 'p3': {'playernum': 3, 'name': 'Alex', 'colour': 'green', 'fighter1': 'Ganondorf', 'fighter2': 'Villager'}, 'p4': {'playernum': 4, 'name': 'Kit', 'colour': 'darkorange', 'fighter1': 'Ness', 'fighter2': 'Zelda'}, 'p5': {'playernum': 5, 'name': 'Alvin', 'colour': 'royalblue', 'fighter1': 'Cloud', 'fighter2': 'Ryu'}, 'p6': {'playernum': 6, 'name': 'Eric', 'colour': 'purple', 'fighter1': 'Inkling', 'fighter2': 'Pikachu'}}
 
     def __init__(self, master, fighter_list, start_game_callback):
         tk.Frame.__init__(self, master)
@@ -39,6 +38,7 @@ class StartMenu(tk.Frame):
             self._players[player].append(tk.Label(self, text="Player " + str(player_num) + ":", font=(None, 12)))
             self._players[player].append(tk.Label(self, text="Name: "))
             self._players[player].append(tk.Entry(self))
+            #FIXME: Change colour input to Combobox
             self._players[player].append(tk.Label(self, text="Colour: "))
             self._players[player].append(tk.Entry(self))
             self._players[player].append(tk.Label(self, text="Squad 1: "))
@@ -73,6 +73,10 @@ class StartMenu(tk.Frame):
         self._start_button = tk.Button(self, text="Start!", font=(None, 20),  command=self.start_game)
         self._start_button.grid(row=current_row, column=0, columnspan=4, pady=20)
 
+        current_row += 1
+        self._start_test = tk.Button(self, text="Start With Test Data", font=(None, 12), command=self.start_test)
+        self._start_test.grid(row=current_row, column=0, columnspan=4, pady=20)
+
 
     def start_game(self):
         player_data = {}
@@ -88,15 +92,24 @@ class StartMenu(tk.Frame):
             player_data[player_key]["fighter1"] = _player_inputs[FIGHTER_1_ENTRY].get()
             player_data[player_key]["fighter2"] = _player_inputs[FIGHTER_2_ENTRY].get()
             current_player += 1
-        # print("Player inputs: ", end="")
-        # print(player_data)
+
+        self._start_game_callback(player_data)
 
 
-
-        # self._start_game_callback(player_data)
-        # print(StartMenu.test_player_data)
-
-        self._start_game_callback(StartMenu.test_player_data)
+    def start_test(self):
+        test_player_data = {'p1': {'playernum': 1, 'name': 'Matt', 'colour': 'goldenrod', 'fighter1': 'Peach',
+                                   'fighter2': 'Captain Falcon'},
+                            'p2': {'playernum': 2, 'name': 'Joe', 'colour': 'red', 'fighter1': 'Ness',
+                                   'fighter2': 'Ness'},
+                            'p3': {'playernum': 3, 'name': 'Alex', 'colour': 'green', 'fighter1': 'Ganondorf',
+                                   'fighter2': 'Villager'},
+                            'p4': {'playernum': 4, 'name': 'Kit', 'colour': 'darkorange', 'fighter1': 'Ness',
+                                   'fighter2': 'Zelda'},
+                            'p5': {'playernum': 5, 'name': 'Alvin', 'colour': 'royalblue', 'fighter1': 'Cloud',
+                                   'fighter2': 'Ryu'},
+                            'p6': {'playernum': 6, 'name': 'Eric', 'colour': 'purple', 'fighter1': 'Inkling',
+                                   'fighter2': 'Pikachu'}}
+        self._start_game_callback(test_player_data)
 
 
 

@@ -39,7 +39,7 @@ class SquadMenu(tk.Frame):
         self._subheader.grid(row=current_row, column=0, columnspan=5, pady=5)
         current_row += 1
         self._move_btn = tk.Button(self, text="Move", font=(None, 10, "bold"), command=self._generate_move_list)
-        self._move_btn.grid(row=current_row, column=0)
+        self._move_btn.grid(row=current_row, column=0, pady=(1, 10))
         self._build_btn = tk.Button(self, text="Build", font=(None, 10, "bold"), command=self._colonize)
         self._build_btn.grid(row=current_row, column=2, pady=(1, 10))
         current_row += 1
@@ -59,15 +59,17 @@ class SquadMenu(tk.Frame):
         for i, hex_id in enumerate(adj_hexes):
             adj_squads = hex_list[hex_id - 1].get_squads()
             bg_color = None
+            btn_state = "normal"
             for squad in adj_squads:
                 if squad is not None:
                     if squad.get_owner_name() != self._squad.get_owner_name():
                         bg_color = "red"
                         break
-                    
+                    else:
+                        if not hex_list[hex_id - 1].check_open_space():
+                            btn_state = "disabled"
 
-            # self._move_buttons.append(tk.Button(self._move_menu, text=str(hex), command=self._squad.move_squad))
-            self._move_buttons.append(tk.Label(self._move_menu, text=str(hex_id), relief="raised", background = bg_color, padx=5, pady=5))
+            self._move_buttons.append(tk.Label(self._move_menu, text=str(hex_id), relief="raised", background = bg_color, padx=5, pady=5, state=btn_state))
             self._move_buttons[-1].grid(row=0, column=i)
             self._move_buttons[-1].bind("<Button-1>", self._move_click)
             self._move_buttons[-1].bind("<ButtonRelease-1>", self._release_button)

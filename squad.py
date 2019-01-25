@@ -57,6 +57,7 @@ class Squad():
     def move_squad(self, event, hex_map_ref):
         new_loc = int(event.widget.cget("text"))
         hex_list = hex_map_ref.get_hex_list()
+        hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
         hex_list[self._hex_location - 1].remove_squad(self._squad_slot_id)
         # self._squad_slot_id = hex_list[new_loc - 1].add_squad(self._squad_icon)
         self._squad_slot_id = hex_list[new_loc - 1].add_squad(self)

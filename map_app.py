@@ -19,6 +19,7 @@ from PIL import Image, ImageTk, ImageOps
 COS_30 = math.cos(math.radians(30))
 SIN_30 = math.sin(math.radians(30))
 FIGHTER_ICON_PATH = "./images/fighter_icons"
+MAP_ICON_PATH = "./images/map_icons"
 
 class MainWindow(tk.Frame):
 
@@ -28,6 +29,7 @@ class MainWindow(tk.Frame):
 
         self._fighter_list = self._generate_fighter_list()
         self._fighter_image_dict = self._generate_fighter_images(self._fighter_list)
+        self._icon_image_dict = self._generate_icons()
         self._in_progress = False
         self._players = []
 
@@ -99,6 +101,25 @@ class MainWindow(tk.Frame):
             f_index += 1
         # print(fighter_image_dict)
         return fighter_image_dict
+
+
+    def _generate_icons(self):
+        icon_dict = {}
+        filename_list = []
+        for filename in os.listdir(MAP_ICON_PATH):
+            filename_list.append(filename)
+        for icon_file in filename_list:
+            filename_root = icon_file.split('.')[0]
+            raw_image = Image.open(MAP_ICON_PATH + "/" + icon_file).convert("RGBA")
+            menu_image = raw_image.resize((50, 50))
+            map_image_normal = raw_image.resize((25, 25))
+            menu_image_object = ImageTk.PhotoImage(menu_image)
+            map_image_normal_object = ImageTk.PhotoImage(map_image_normal)
+            icon_dict[filename_root] = {}
+            icon_dict[filename_root]["menu"] = menu_image_object
+            icon_dict[filename_root]["map"] = map_image_normal_object
+        return icon_dict
+
 
 
     def _initialize_players(self, player_data):

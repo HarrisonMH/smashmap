@@ -93,7 +93,7 @@ class HexMap(tk.Frame):
     def _create_structure_slots(self):
         for hex_id in self._hex_coord_dict:
             slot_x = self._hex_coord_dict[hex_id][0][0] + (TEST_WIDTH_50 / 2)
-            slot_y = self._hex_coord_dict[hex_id][4][1] - 15
+            slot_y = self._hex_coord_dict[hex_id][4][1] - 20
             self._hexes[hex_id - 1].set_structure_coords([slot_x, slot_y])
         return
 
@@ -191,7 +191,9 @@ class HexMap(tk.Frame):
 
     def create_structure_callback(self, hex, structure):
         if structure == "HQ":
-            structure_id = self.hex_grid.create_text(hex.get_structure_coords(), text="*", font=(None, 20))
+            # structure_id = self.hex_grid.create_text(hex.get_structure_coords(), text="*", font=(None, 20))
+            structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._icon_image_dict["hq"]["map"])
+            # structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._fighter_image_dict["Cloud"]["map"])
             hex.set_structure_id(structure_id)
         elif structure == "Refinery":
             structure_id = self.hex_grid.create_text(hex.get_structure_coords(), text="@", font=(None, 10))
