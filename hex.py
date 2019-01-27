@@ -40,7 +40,6 @@ class Hex():
 
 
     def get_id(self):
-        # print(self._id)
         return self._id
 
     def get_owner(self):
@@ -72,6 +71,7 @@ class Hex():
         return self._adjacent_coords
 
     def set_adjacent_ids(self, parent, coord_list):
+        # FIXME: Refactor protected variable access
         id_list = []
         for coords in coord_list:
             id_list.append(parent._coords_to_id(coords))
@@ -80,8 +80,14 @@ class Hex():
     def get_adjacent_ids(self):
         return self._adjacent_ids
 
+    def check_if_squad_present(self):
+        if self._squad_1 is not None or self._squad_2 is not None:
+            return True
+        else:
+            return False
+
     def check_open_space(self):
-        if self._squad_1 == None or self._squad_2 == None:
+        if self._squad_1 is None or self._squad_2 is None:
             return True
         else:
             return False
@@ -98,8 +104,10 @@ class Hex():
     def get_first_open_slot(self):
         if self._squad_1 == None:
             return self._squad_slot_ids[0]
-        else:
+        elif self._squad_2 == None:
             return self._squad_slot_ids[1]
+        else:
+            return None
 
     def add_squad(self, squad):
         if self._squad_1 == None:

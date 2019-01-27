@@ -19,9 +19,10 @@ class SquadMenuIcon(tk.Frame):
 
     def _create_widgets(self):
         self._icon = tk.Label(self, image=self._fighter_icon, borderwidth=2, relief="groove")
+        self._icon.pack()
         if self._squad.get_turn_status():
             self._icon.config(state="disabled")
-        self._icon.pack()
+            return
         self._icon.bind("<Button-1>", self._show_squad_menu)
 
 

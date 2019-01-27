@@ -65,6 +65,7 @@ class Squad():
             hex_list[new_loc - 1].change_owner("None", "white")
 
         self.set_location(new_loc)
+        self._turn_taken = True
 
     def _map_icon_click(self, event):
         print("Map icon: " + self._fighter)

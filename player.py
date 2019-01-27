@@ -8,9 +8,11 @@ from squad import Squad
 
 class Player():
 
-    def __init__(self, master, player_data, place_squad_icon_callback):
+    def __init__(self, master, player_data, place_squad_icon_callback, player_menu_callback, hex_menu_callback):
         self._master = master
         self._place_squad_icon_callback = place_squad_icon_callback
+        self._player_menu_callback = player_menu_callback
+        self._hex_menu_callback = hex_menu_callback
         self._player_number = player_data["playernum"]
         self._name = player_data["name"]
         self._colour = player_data["colour"]

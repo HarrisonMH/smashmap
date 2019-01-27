@@ -32,6 +32,7 @@ class MainWindow(tk.Frame):
         self._icon_image_dict = self._generate_icons()
         self._in_progress = False
         self._players = []
+        self._active_menu = "start"
 
         self._create_widgets(master)
 
@@ -46,8 +47,9 @@ class MainWindow(tk.Frame):
     def _hex_menu_callback(self, master, hex):
         if self._in_progress == True:
             self.side_menu.grid_forget()
-            self.side_menu = HexMenu(master, hex)
+            self.side_menu = HexMenu(master, hex, self._hex_map, self._fighter_image_dict)
             self.side_menu.grid(column=11, row=0)
+            self._active_menu = "hex"
 
 
     def _start_game_callback(self, player_data):
@@ -69,6 +71,7 @@ class MainWindow(tk.Frame):
         self.side_menu.grid_forget()
         self.side_menu = PlayerMenu(self._master, self._players[player_num - 1], self._fighter_image_dict, self._hex_map)
         self.side_menu.grid(column=11, row=0)
+        self._active_menu = "player"
 
 
     def _generate_fighter_list(self):
@@ -121,10 +124,13 @@ class MainWindow(tk.Frame):
         return icon_dict
 
 
-
     def _initialize_players(self, player_data):
         for player in player_data:
-            self._players.append(Player(self._master, player_data[player], self._hex_map.create_squad_icon_callback))
+            self._players.append(Player(self._master, player_data[player], self._hex_map.create_squad_icon_callback, self._player_menu_callback, self._hex_menu_callback))
+
+
+    def get_active_menu(self):
+        return self._active_menu
 
 
 if __name__ == "__main__":
