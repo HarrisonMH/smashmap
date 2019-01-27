@@ -27,7 +27,7 @@ class Hex():
 
 
     def _show_menu(self, event=None):
-        self._hex_menu_callback(self._master, self)
+        self._hex_menu_callback(self)
 
         # Grey/black hex toggle code:
 

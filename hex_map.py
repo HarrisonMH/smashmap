@@ -169,22 +169,17 @@ class HexMap(tk.Frame):
         self._hexes[centre_hex - 1].set_structure("Refinery", self.create_structure_callback)
 
         start_positions = [1, 5, 27, 35, 57, 61]
-        # current_player = 1
         current_player_index = 0
         for hex in start_positions:
-            # current_player_str = "p" + str(current_player)
-            # current_player_data = player_data[current_player_str]
             current_player = player_list[current_player_index]
-            # self._hexes[hex - 1].change_owner(current_player_data["name"], current_player_data["colour"])
             self._hexes[hex - 1].change_owner(current_player.get_name(), current_player.get_colour())
             self._hexes[hex - 1].set_structure("HQ", self.create_structure_callback)
             for adj_hex in self._hexes[hex - 1].get_adjacency_coords():
                 adj_id = self._coords_to_id(adj_hex)
-                # self._hexes[adj_id - 1].change_owner(current_player_data["name"], current_player_data["colour"])
                 self._hexes[adj_id - 1].change_owner(current_player.get_name(), current_player.get_colour())
 
-            # self._parent._players[current_player-1].set_hq(hex)
-            current_player.set_hq(hex)
+            # current_player.set_hq(hex)
+            current_player.set_hq(self._hexes[hex - 1])
 
             current_player_index += 1
 
@@ -208,11 +203,12 @@ class HexMap(tk.Frame):
     #     return
 
     def create_squad_icon_callback(self, squad):
+        squad_hex = squad.get_location()
         squad_icon = tk.Label(self, image=self._parent._fighter_image_dict[squad.get_fighter()]["map"], borderwidth=2,
-                                         relief="ridge", background=self.hex_grid.itemcget(squad.get_location(), "fill"))
-        starting_slot = self._hexes[squad.get_location() - 1].get_first_open_slot()
+                                         relief="ridge", background=self.hex_grid.itemcget(squad_hex.get_id(), "fill"))
+        starting_slot = squad_hex.get_first_open_slot()
         squad.set_squad_icon(squad_icon, starting_slot)
-        self._hexes[squad.get_location() - 1].add_squad(squad)
+        squad_hex.add_squad(squad)
         return
 
 

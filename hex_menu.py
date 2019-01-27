@@ -7,10 +7,10 @@ from squad_menu import SquadMenu
 
 class HexMenu(tk.Frame):
 
-    def __init__(self, master, hex, hex_map, fighter_image_dict):
+    def __init__(self, hex, hex_map, fighter_image_dict):
         # super().__init__()
-        tk.Frame.__init__(self, master)
-        self._master = master
+        tk.Frame.__init__(self)
+        self._master = None
         self._hex = hex
         self._hex_map = hex_map
         self._fighter_image_dict = fighter_image_dict

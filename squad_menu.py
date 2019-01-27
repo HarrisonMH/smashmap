@@ -30,7 +30,7 @@ class SquadMenu(tk.Frame):
         self._owner_label = tk.Label(self, text="Owner: " + self._squad.get_owner_name(), font=(None, 12))
         self._owner_label.grid(row=current_row, column=2)
         current_row += 1
-        self._loc_label = tk.Label(self, text="Location: Hex " + str(self._squad.get_location()), font=(None, 12))
+        self._loc_label = tk.Label(self, text="Location: Hex " + str(self._squad.get_location().get_id()), font=(None, 12))
         self._loc_label.grid(row=current_row, column=0)
         self._kill_count = tk.Label(self, text="Kills: " + str(self._squad.get_kills()), font=(None, 12))
         self._kill_count.grid(row=current_row, column=2)
@@ -51,7 +51,8 @@ class SquadMenu(tk.Frame):
         self._action_menu.grid_forget()
         hex_list = self._hex_map_ref.get_hex_list()
         squad_loc = self._squad.get_location()
-        adj_hexes = hex_list[squad_loc - 1].get_adjacent_ids()
+        # adj_hexes = hex_list[squad_loc - 1].get_adjacent_ids()
+        adj_hexes = squad_loc.get_adjacent_ids()
         #FIXME: Add logic to check for space in adjacent hexes
 
         self._move_menu = tk.Frame(self)
@@ -80,8 +81,8 @@ class SquadMenu(tk.Frame):
     def _colonize(self):
         current_loc = self._squad.get_location()
         hex_list = self._hex_map_ref.get_hex_list()
-        if hex_list[current_loc - 1].get_owner() == "None":
-            hex_list[current_loc - 1].change_owner(self._squad.get_owner().get_name(), self._squad.get_owner().get_colour())
+        if current_loc.get_owner() == "None":
+            current_loc.change_owner(self._squad.get_owner().get_name(), self._squad.get_owner().get_colour())
 
     def _move_click(self, event):
         event.widget.config(relief="sunken")

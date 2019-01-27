@@ -44,10 +44,10 @@ class MainWindow(tk.Frame):
         self.side_menu.grid(column=11, row=0)
 
 
-    def _hex_menu_callback(self, master, hex):
+    def _hex_menu_callback(self, hex):
         if self._in_progress == True:
             self.side_menu.grid_forget()
-            self.side_menu = HexMenu(master, hex, self._hex_map, self._fighter_image_dict)
+            self.side_menu = HexMenu(hex, self._hex_map, self._fighter_image_dict)
             self.side_menu.grid(column=11, row=0)
             self._active_menu = "hex"
 
@@ -60,16 +60,26 @@ class MainWindow(tk.Frame):
 
         # self._hex_map.grid(column=0, row=0, columnspan=10, rowspan=20)
 
-        self.bottom_menu = BottomMenu(self._master, player_data, self._player_menu_callback)
+        # self.bottom_menu = BottomMenu(self._master, player_data, self._player_menu_callback)
+        self.bottom_menu = BottomMenu(self._master, self._players, self._player_menu_callback)
         self.bottom_menu.grid(column=0, row=21, pady=5)
 
 
-    def _player_menu_callback(self, event):
-        player_num = int(event.widget.cget("text")[7])
-        print("Opening Player " + str(player_num) + " menu")
+    # def _player_menu_callback(self, event):
+    #     player_num = int(event.widget.cget("text")[7])
+    #     print("Opening Player " + str(player_num) + " menu")
+    #
+    #     self.side_menu.grid_forget()
+    #     self.side_menu = PlayerMenu(self._master, self._players[player_num - 1], self._fighter_image_dict, self._hex_map)
+    #     self.side_menu.grid(column=11, row=0)
+    #     self._active_menu = "player"
+
+    def _player_menu_callback(self, player):
+        # player_num = int(event.widget.cget("text")[7])
+        print("Opening Player " + str(player.get_player_number()) + " menu")
 
         self.side_menu.grid_forget()
-        self.side_menu = PlayerMenu(self._master, self._players[player_num - 1], self._fighter_image_dict, self._hex_map)
+        self.side_menu = PlayerMenu(self._master, player, self._fighter_image_dict, self._hex_map)
         self.side_menu.grid(column=11, row=0)
         self._active_menu = "player"
 

@@ -38,7 +38,7 @@ class PlayerMenu(tk.Frame):
         self._territory = tk.Label(self, text="Territory Controlled: " + str(self._player.get_territory_size()), font=(None, 13), justify="left", anchor="w")
         self._territory.grid(row=current_row, column=0)
 
-        self._hq_label = tk.Label(self, text="HQ: Hex " + str(self._player.get_hq()), font=(None, 13))
+        self._hq_label = tk.Label(self, text="HQ: Hex " + str(self._player.get_hq().get_id()), font=(None, 13))
         self._hq_label.grid(row=current_row, column=2)
         current_row += 1
         self._squads_header = tk.Label(self, text="Squads: ", font=(None, 13, "bold"))

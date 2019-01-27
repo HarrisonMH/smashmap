@@ -63,9 +63,16 @@ class Player():
             self.adjust_resources(-250)
         self._initialize_squads(self._starting_squads)
 
-    def build_squad(self, fighter, hex_id):
+    # def build_squad(self, fighter, hex_id):
+    #     # self._squads.append(Squad(self._name, fighter, hex_id, self._place_squad_icon_callback))
+    #     self._squads.append(Squad(self, fighter, hex_id, self._place_squad_icon_callback))
+
+    def build_squad(self, fighter, hex):
         # self._squads.append(Squad(self._name, fighter, hex_id, self._place_squad_icon_callback))
-        self._squads.append(Squad(self, fighter, hex_id, self._place_squad_icon_callback))
+        self._squads.append(Squad(self, fighter, hex, self._place_squad_icon_callback))
+
+    def show_player_menu(self, event=None):
+        self._player_menu_callback(self)
 
     def _initialize_squads(self, starting_squads):
         self.build_squad(starting_squads[0], self._hq)

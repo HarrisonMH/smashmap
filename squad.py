@@ -55,16 +55,17 @@ class Squad():
         self._squad_icon.bind("<Button-1>", self._map_icon_click)
 
     def move_squad(self, event, hex_map_ref):
-        new_loc = int(event.widget.cget("text"))
+        new_loc_id = int(event.widget.cget("text"))
         hex_list = hex_map_ref.get_hex_list()
+        new_loc_hex = hex_list[new_loc_id - 1]
         hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
-        hex_list[self._hex_location - 1].remove_squad(self._squad_slot_id)
+        self._hex_location.remove_squad(self._squad_slot_id)
         # self._squad_slot_id = hex_list[new_loc - 1].add_squad(self._squad_icon)
-        self._squad_slot_id = hex_list[new_loc - 1].add_squad(self)
-        if hex_list[new_loc - 1].get_owner() != self._owner.get_name():
-            hex_list[new_loc - 1].change_owner("None", "white")
+        self._squad_slot_id = new_loc_hex.add_squad(self)
+        if new_loc_hex.get_owner() != self._owner.get_name():
+            new_loc_hex.change_owner("None", "white")
 
-        self.set_location(new_loc)
+        self.set_location(new_loc_hex)
         self._turn_taken = True
 
     def _map_icon_click(self, event):
