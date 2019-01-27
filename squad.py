@@ -4,8 +4,9 @@
 
 class Squad():
 
-    def __init__(self, owner, fighter, location, create_squad_icon_callback):
+    def __init__(self, owner, fighter, location, create_squad_icon_callback, active_menu):
         self._create_squad_icon_callback = create_squad_icon_callback
+        self._active_menu_ref = active_menu
         self._squad_icon = None
         self._squad_slot_id = None
         self._owner = owner
@@ -54,7 +55,7 @@ class Squad():
         self._squad_slot_id = squad_slot_id
         self._squad_icon.bind("<Button-1>", self._map_icon_click)
 
-    def move_squad(self, event, hex_map_ref):
+    def move_squad(self, event, hex_map_ref, parent_menu_str):
         new_loc_id = int(event.widget.cget("text"))
         hex_list = hex_map_ref.get_hex_list()
         new_loc_hex = hex_list[new_loc_id - 1]
@@ -64,6 +65,14 @@ class Squad():
         self._squad_slot_id = new_loc_hex.add_squad(self)
         if new_loc_hex.get_owner() != self._owner.get_name():
             new_loc_hex.change_owner("None", "white")
+
+        print("Active menu: " + self._active_menu_ref)
+        if parent_menu_str == "player":
+            print("Refreshing player menu")
+            self._owner.show_player_menu()
+        elif parent_menu_str == "hex":
+            print("Refreshing hex menu")
+            self._hex_location.show_hex_menu()
 
         self.set_location(new_loc_hex)
         self._turn_taken = True

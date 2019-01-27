@@ -6,12 +6,13 @@ import tkinter as tk
 
 class SquadMenu(tk.Frame):
 
-    def __init__(self, master, squad, hex_map):
+    def __init__(self, master, squad, hex_map, parent_menu_str):
         super(SquadMenu, self).__init__(master)
 
         self._master = master
         self._squad = squad
         self._hex_map_ref = hex_map
+        self._parent_menu_str = parent_menu_str
         self._move_buttons = []
 
         self._create_widgets()
@@ -86,7 +87,7 @@ class SquadMenu(tk.Frame):
 
     def _move_click(self, event):
         event.widget.config(relief="sunken")
-        self._squad.move_squad(event, self._hex_map_ref)
+        self._squad.move_squad(event, self._hex_map_ref, self._parent_menu_str)
         self._move_btn.config(relief="raised")
         self._action_menu.grid_forget()
 

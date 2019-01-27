@@ -136,7 +136,7 @@ class MainWindow(tk.Frame):
 
     def _initialize_players(self, player_data):
         for player in player_data:
-            self._players.append(Player(self._master, player_data[player], self._hex_map.create_squad_icon_callback, self._player_menu_callback, self._hex_menu_callback))
+            self._players.append(Player(self._master, player_data[player], self._hex_map.create_squad_icon_callback, self._player_menu_callback, self._hex_menu_callback, self._active_menu))
 
 
     def get_active_menu(self):

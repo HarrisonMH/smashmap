@@ -10,6 +10,7 @@ class HexMenu(tk.Frame):
     def __init__(self, hex, hex_map, fighter_image_dict):
         # super().__init__()
         tk.Frame.__init__(self)
+        self._menu_name = "hex"
         self._master = None
         self._hex = hex
         self._hex_map = hex_map
@@ -81,7 +82,7 @@ class HexMenu(tk.Frame):
 
     def _squad_menu_callback(self, squad, event):
         self._squad_menu.grid_forget()
-        self._squad_menu = SquadMenu(self, squad, self._hex_map)
+        self._squad_menu = SquadMenu(self, squad, self._hex_map, self._menu_name)
         self._squad_menu.grid(row=self._current_row, column=0, columnspan=5)
         for icon in self._squad_icon_list:
             icon.set_relief("groove")

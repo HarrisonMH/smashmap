@@ -23,10 +23,10 @@ class Hex():
         self._squad_1 = None
         self._squad_2 = None
 
-        hex_map.tag_bind(self._id, "<Button-1>", self._show_menu)
+        hex_map.tag_bind(self._id, "<Button-1>", self.show_hex_menu)
 
 
-    def _show_menu(self, event=None):
+    def show_hex_menu(self, event=None):
         self._hex_menu_callback(self)
 
         # Grey/black hex toggle code:

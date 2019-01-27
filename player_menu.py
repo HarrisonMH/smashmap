@@ -10,6 +10,7 @@ class PlayerMenu(tk.Frame):
 
     def __init__(self, master, player, fighter_image_dict, hex_map):
         super().__init__(master)
+        self._menu_name = "player"
         self._master = master
         self._player = player
         self._fighter_image_dict = fighter_image_dict
@@ -59,7 +60,7 @@ class PlayerMenu(tk.Frame):
 
     def _squad_menu_callback(self, squad, event):
         self._squad_menu.grid_forget()
-        self._squad_menu = SquadMenu(self, squad, self._hex_map)
+        self._squad_menu = SquadMenu(self, squad, self._hex_map, self._menu_name)
         self._squad_menu.grid(row=10, column=0, columnspan=5)
         for icon in self._squad_icon_list:
             icon.set_relief("groove")
