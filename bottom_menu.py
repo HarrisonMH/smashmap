@@ -8,10 +8,11 @@ import tkinter as tk
 
 class BottomMenu(tk.Frame):
 
-    def __init__(self, master, player_list, player_menu_callback):
+    def __init__(self, master, player_list, player_menu_callback, end_turn_callback):
         super().__init__(master)
         self._master = master
         self._player_menu_callback = player_menu_callback
+        self._end_turn_callback = end_turn_callback
         self._player_list = player_list
         self._player_button_list = []
         self._create_widgets()
@@ -35,4 +36,8 @@ class BottomMenu(tk.Frame):
             # self._player_button_list[-1].bind("<Button-1>", self._player_menu_callback)
             self._player_button_list[-1].bind("<Button-1>", player.show_player_menu)
             current_col += 1
+
+        self._end_button = tk.Button(self, text = "Refresh All", command=self._end_turn_callback)
+        self._end_button.grid(row=0, column=current_col)
+        current_col += 1
 

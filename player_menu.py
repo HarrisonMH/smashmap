@@ -51,7 +51,7 @@ class PlayerMenu(tk.Frame):
             fighter_name = squad.get_fighter()
             self._squad_icon_list.append(SquadMenuIcon(self, squad, self._squad_menu_callback, self._fighter_image_dict[fighter_name]["menu"]))
             self._squad_icon_list[-1].grid(row=current_row, column=current_col, pady=(5, 10))
-            if current_col >= 5:
+            if current_col >= 4 :
                 current_col = 0
                 current_row += 1
             else:

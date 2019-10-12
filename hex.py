@@ -25,7 +25,6 @@ class Hex():
 
         hex_map.tag_bind(self._id, "<Button-1>", self.show_hex_menu)
 
-
     def show_hex_menu(self, event=None):
         self._hex_menu_callback(self)
 
@@ -99,7 +98,12 @@ class Hex():
         return self._squad_slot_ids
 
     def get_squads(self):
-        return [self._squad_1, self._squad_2]
+        squad_list = []
+        if self._squad_1 is not None:
+            squad_list.append(self._squad_1)
+        if self._squad_2 is not None:
+            squad_list.append(self._squad_2)
+        return squad_list
 
     def get_first_open_slot(self):
         if self._squad_1 == None:
@@ -110,12 +114,12 @@ class Hex():
             return None
 
     def add_squad(self, squad):
-        if self._squad_1 == None:
+        if self._squad_1 is None:
             self._squad_1 = squad
             self._hex_map_ref.itemconfig(self._squad_slot_ids[0], window=squad.get_squad_icon())
             return self._squad_slot_ids[0]
         else:
-            if self._squad_2 == None:
+            if self._squad_2 is None:
                 self._squad_2 = squad
                 self._hex_map_ref.itemconfig(self._squad_slot_ids[1], window=squad.get_squad_icon())
                 return self._squad_slot_ids[1]

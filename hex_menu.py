@@ -83,7 +83,7 @@ class HexMenu(tk.Frame):
     def _squad_menu_callback(self, squad, event):
         self._squad_menu.grid_forget()
         self._squad_menu = SquadMenu(self, squad, self._hex_map, self._menu_name)
-        self._squad_menu.grid(row=self._current_row, column=0, columnspan=5)
+        self._squad_menu.grid(row=self._current_row, column=0, columnspan=2)
         for icon in self._squad_icon_list:
             icon.set_relief("groove")
         event.widget.config(relief="sunken")

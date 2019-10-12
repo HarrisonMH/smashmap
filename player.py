@@ -8,12 +8,12 @@ from squad import Squad
 
 class Player():
 
-    def __init__(self, master, player_data, place_squad_icon_callback, player_menu_callback, hex_menu_callback, active_menu):
+    def __init__(self, master, player_data, place_squad_icon_callback, player_menu_callback, hex_menu_callback, battle_popup_callback):
         self._master = master
         self._place_squad_icon_callback = place_squad_icon_callback
         self._player_menu_callback = player_menu_callback
         self._hex_menu_callback = hex_menu_callback
-        self._active_menu = active_menu
+        self._battle_popup_callback = battle_popup_callback
         self._player_number = player_data["playernum"]
         self._name = player_data["name"]
         self._colour = player_data["colour"]
@@ -70,7 +70,7 @@ class Player():
 
     def build_squad(self, fighter, hex):
         # self._squads.append(Squad(self._name, fighter, hex_id, self._place_squad_icon_callback))
-        self._squads.append(Squad(self, fighter, hex, self._place_squad_icon_callback, self._active_menu))
+        self._squads.append(Squad(self, fighter, hex, self._place_squad_icon_callback, self._battle_popup_callback))
 
     def show_player_menu(self, event=None):
         self._player_menu_callback(self)

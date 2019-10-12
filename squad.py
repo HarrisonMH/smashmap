@@ -4,9 +4,9 @@
 
 class Squad():
 
-    def __init__(self, owner, fighter, location, create_squad_icon_callback, active_menu):
+    def __init__(self, owner, fighter, location, create_squad_icon_callback, battle_popup_callack):
         self._create_squad_icon_callback = create_squad_icon_callback
-        self._active_menu_ref = active_menu
+        self._battle_popup_callback = battle_popup_callack
         self._squad_icon = None
         self._squad_slot_id = None
         self._owner = owner
@@ -35,6 +35,14 @@ class Squad():
         self._kills += 1
         return
 
+    def take_turn(self):
+        self._turn_taken = True
+        self._squad_icon.config(state="disabled")
+
+    def refresh_turn(self):
+        self._turn_taken = False
+        self._squad_icon.config(state="normal")
+
     def get_turn_status(self):
         return self._turn_taken
 
@@ -59,25 +67,40 @@ class Squad():
         new_loc_id = int(event.widget.cget("text"))
         hex_list = hex_map_ref.get_hex_list()
         new_loc_hex = hex_list[new_loc_id - 1]
-        hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
-        self._hex_location.remove_squad(self._squad_slot_id)
-        # self._squad_slot_id = hex_list[new_loc - 1].add_squad(self._squad_icon)
-        self._squad_slot_id = new_loc_hex.add_squad(self)
-        if new_loc_hex.get_owner() != self._owner.get_name():
-            new_loc_hex.change_owner("None", "white")
+        # print("Hex " + str(new_loc_hex.get_id()) + " occupied: " + str(new_loc_hex.check_if_squad_present()))
+        if self.check_hex_for_enemy(new_loc_hex) is True:
+            self._battle_popup_callback(self, new_loc_hex)
+        else:
+            hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
+            self._hex_location.remove_squad(self._squad_slot_id)
+            self._squad_slot_id = new_loc_hex.add_squad(self)
+            if new_loc_hex.get_owner() != self._owner.get_name():
+                new_loc_hex.change_owner("None", "white")
 
-        print("Active menu: " + self._active_menu_ref)
-        if parent_menu_str == "player":
-            print("Refreshing player menu")
-            self._owner.show_player_menu()
-        elif parent_menu_str == "hex":
-            print("Refreshing hex menu")
-            self._hex_location.show_hex_menu()
-
-        self.set_location(new_loc_hex)
-        self._turn_taken = True
+            self.take_turn()
+            self.refresh_active_menu(parent_menu_str)
+            self.set_location(new_loc_hex)
 
     def _map_icon_click(self, event):
         print("Map icon: " + self._fighter)
         # self._squad_icon.config(state="disabled")
+
+
+    def refresh_active_menu(self, active_menu_str):
+        """Takes the name of the active menu in string format and invokes the callback to refresh the active menu."""
+        if active_menu_str == "player":
+            print("Refreshing player menu")
+            self._owner.show_player_menu()
+        elif active_menu_str == "hex":
+            print("Refreshing hex menu")
+            self._hex_location.show_hex_menu()
+
+
+    def check_hex_for_enemy(self, hex):
+        if hex.check_if_squad_present() is True:
+            enemy_squads = hex.get_squads()
+            for squad in enemy_squads:
+                if squad.get_owner() != self._owner:
+                    return True
+        return False
 

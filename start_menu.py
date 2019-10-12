@@ -100,7 +100,7 @@ class StartMenu(tk.Frame):
         test_player_data = {'p1': {'playernum': 1, 'name': 'Matt', 'colour': 'goldenrod', 'fighter1': 'Peach',
                                    'fighter2': 'Captain Falcon'},
                             'p2': {'playernum': 2, 'name': 'Joe', 'colour': 'red', 'fighter1': 'Ness',
-                                   'fighter2': 'Ness'},
+                                   'fighter2': 'Joker'},
                             'p3': {'playernum': 3, 'name': 'Alex', 'colour': 'green', 'fighter1': 'Ganondorf',
                                    'fighter2': 'Villager'},
                             'p4': {'playernum': 4, 'name': 'Kit', 'colour': 'darkorange', 'fighter1': 'Ness',

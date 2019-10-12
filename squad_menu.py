@@ -84,6 +84,9 @@ class SquadMenu(tk.Frame):
         hex_list = self._hex_map_ref.get_hex_list()
         if current_loc.get_owner() == "None":
             current_loc.change_owner(self._squad.get_owner().get_name(), self._squad.get_owner().get_colour())
+            self._squad.take_turn()
+            self._squad.refresh_active_menu(self._parent_menu_str)
+
 
     def _move_click(self, event):
         event.widget.config(relief="sunken")

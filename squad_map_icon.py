@@ -19,8 +19,6 @@ class SquadMapIcon(tk.Frame):
 
     def _create_widgets(self):
         self._icon = tk.Label(self, image=self._fighter_icon, borderwidth=2, relief="groove")
-        if self._squad.get_turn_status():
-            self._icon.config(state="disabled")
         self._icon.pack()
         # self._icon.bind("<Button-1>", self._show_squad_menu)
 
@@ -30,3 +28,10 @@ class SquadMapIcon(tk.Frame):
 
     def set_relief(self, relief_var):
         self._icon.config(relief=relief_var)
+
+    def disable(self):
+        print("Disabling icon...")
+        self._icon.config(state="disabled")
+
+    def enable(self):
+        self._icon.config(state="normal")
