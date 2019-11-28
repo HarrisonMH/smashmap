@@ -1,3 +1,4 @@
+Banjo & Kazooie
 Bayonetta
 Bowser
 Bowser Jr
@@ -16,6 +17,7 @@ Falco
 Fox
 Ganondorf
 Greninja
+Hero
 Ice Climbers
 Ike
 Incineroar

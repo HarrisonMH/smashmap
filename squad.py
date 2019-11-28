@@ -2,11 +2,12 @@
 #
 # Defines attributes of a squad
 
-class Squad():
 
-    def __init__(self, owner, fighter, location, create_squad_icon_callback, battle_popup_callack):
+class Squad:
+
+    def __init__(self, owner, fighter, location, create_squad_icon_callback, battle_popup_callback):
         self._create_squad_icon_callback = create_squad_icon_callback
-        self._battle_popup_callback = battle_popup_callack
+        self._battle_popup_callback = battle_popup_callback
         self._squad_icon = None
         self._squad_slot_id = None
         self._owner = owner
@@ -17,7 +18,6 @@ class Squad():
         self._create_squad_icon_callback(self)
 
         self._turn_taken = False
-
 
     def get_owner_name(self):
         return self._owner.get_name()
@@ -58,9 +58,16 @@ class Squad():
     def get_squad_id(self):
         return self._squad_icon
 
-    def set_squad_icon(self, icon_reference, squad_slot_id):
+    def set_squad_slot_id(self, new_id):
+        self._squad_slot_id = new_id
+
+    # def set_squad_icon(self, icon_reference, squad_slot_id):
+    #     self._squad_icon = icon_reference
+    #     self._squad_slot_id = squad_slot_id
+    #     self._squad_icon.bind("<Button-1>", self._map_icon_click)
+
+    def set_squad_icon(self, icon_reference):
         self._squad_icon = icon_reference
-        self._squad_slot_id = squad_slot_id
         self._squad_icon.bind("<Button-1>", self._map_icon_click)
 
     def move_squad(self, event, hex_map_ref, parent_menu_str):
@@ -70,21 +77,28 @@ class Squad():
         # print("Hex " + str(new_loc_hex.get_id()) + " occupied: " + str(new_loc_hex.check_if_squad_present()))
         if self.check_hex_for_enemy(new_loc_hex) is True:
             self._battle_popup_callback(self, new_loc_hex)
-        else:
-            hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
+        elif new_loc_hex.check_open_space() is True:
+            # hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
             self._hex_location.remove_squad(self._squad_slot_id)
-            self._squad_slot_id = new_loc_hex.add_squad(self)
-            if new_loc_hex.get_owner() != self._owner.get_name():
-                new_loc_hex.change_owner("None", "white")
-
+            new_loc_hex.add_squad(self)
+            if new_loc_hex.get_owner() != self._owner:
+                new_loc_hex.change_owner(None, "white")
             self.take_turn()
             self.refresh_active_menu(parent_menu_str)
             self.set_location(new_loc_hex)
+        else:
+            print("Can't move to this position: hex is full")
+
+    def destroy_squad(self, parent_menu_str):
+        print("Deleting squad in slot: ", self._squad_slot_id)
+        self._squad_icon = None
+        self._hex_location.remove_squad(self._squad_slot_id)
+        self._owner.destroy_squad(self)
+        self.refresh_active_menu(parent_menu_str)
 
     def _map_icon_click(self, event):
-        print("Map icon: " + self._fighter)
+        print("Map icon: ", self._fighter, " in slot ", self._squad_slot_id)
         # self._squad_icon.config(state="disabled")
-
 
     def refresh_active_menu(self, active_menu_str):
         """Takes the name of the active menu in string format and invokes the callback to refresh the active menu."""
@@ -95,7 +109,6 @@ class Squad():
             print("Refreshing hex menu")
             self._hex_location.show_hex_menu()
 
-
     def check_hex_for_enemy(self, hex):
         if hex.check_if_squad_present() is True:
             enemy_squads = hex.get_squads()
@@ -103,4 +116,3 @@ class Squad():
                 if squad.get_owner() != self._owner:
                     return True
         return False
-

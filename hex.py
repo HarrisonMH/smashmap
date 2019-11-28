@@ -3,21 +3,22 @@
 # Defines the attributes of the Hex class
 
 
-class Hex():
+class Hex:
 
     def __init__(self, hex_map, master, parent, id, hex_menu_callback, row, column, adjacent_coords):
         self._master = master
         self._parent = parent
         self._hex_map_ref = hex_map
         self._hex_menu_callback = hex_menu_callback
-        self._owner = "None"
+        self._owner = None
         self._id = id
         self._coords = (row, column)
         self._adjacent_coords = adjacent_coords
         self._structure_coords = None
         self._structure_id = None
         self._adjacent_ids = self.set_adjacent_ids(parent, adjacent_coords)
-        self._squad_slot_ids = None
+        self._squad_slot_ids = [None, None]
+        self._squad_slot_coords = None
         self._value = 25
         self._structure = "None"
         self._squad_1 = None
@@ -43,6 +44,13 @@ class Hex():
 
     def get_owner(self):
         return self._owner
+
+    def get_owner_name_str(self):
+        if self._owner is None:
+            return "None"
+        else:
+            return self._owner.get_name()
+
 
     def get_structure(self):
         return self._structure
@@ -94,6 +102,9 @@ class Hex():
     def set_squad_slot_ids(self, id_list):
         self._squad_slot_ids = id_list
 
+    def set_squad_slot_coords(self, coords):
+        self._squad_slot_coords = coords
+
     def get_squad_slots(self):
         return self._squad_slot_ids
 
@@ -105,44 +116,83 @@ class Hex():
             squad_list.append(self._squad_2)
         return squad_list
 
+    # def get_first_open_slot(self):
+    #     if self._squad_1 is None:
+    #         return self._squad_slot_ids[0]
+    #     elif self._squad_2 is None:
+    #         return self._squad_slot_ids[1]
+    #     else:
+    #         return None
+
     def get_first_open_slot(self):
-        if self._squad_1 == None:
-            return self._squad_slot_ids[0]
-        elif self._squad_2 == None:
-            return self._squad_slot_ids[1]
+        if self._squad_1 is None:
+            return self._squad_slot_coords[0]
+        elif self._squad_2 is None:
+            return self._squad_slot_coords[1]
         else:
             return None
+
+    # def add_squad(self, squad):
+    #     if self._squad_1 is None:
+    #         self._squad_1 = squad
+    #         self._hex_map_ref.itemconfig(self._squad_slot_ids[0], window=squad.get_squad_icon())
+    #         return self._squad_slot_ids[0]
+    #     elif self._squad_2 is None:
+    #         self._squad_2 = squad
+    #         self._hex_map_ref.itemconfig(self._squad_slot_ids[1], window=squad.get_squad_icon())
+    #         return self._squad_slot_ids[1]
+    #     else:
+    #         #FIXME: Add error processing for full hex
+    #         print("Hex is full, can't add")
+    #         return
 
     def add_squad(self, squad):
         if self._squad_1 is None:
             self._squad_1 = squad
+            self._squad_slot_ids[0] = self._hex_map_ref.create_window(self._squad_slot_coords[0][0],
+                                                                      self._squad_slot_coords[0][1])
+            squad.set_squad_slot_id(self._squad_slot_ids[0])
             self._hex_map_ref.itemconfig(self._squad_slot_ids[0], window=squad.get_squad_icon())
             return self._squad_slot_ids[0]
+        elif self._squad_2 is None:
+            self._squad_2 = squad
+            self._squad_slot_ids[1] = self._hex_map_ref.create_window(self._squad_slot_coords[1][0],
+                                                                      self._squad_slot_coords[1][1])
+            squad.set_squad_slot_id(self._squad_slot_ids[1])
+            self._hex_map_ref.itemconfig(self._squad_slot_ids[1], window=squad.get_squad_icon())
+            return self._squad_slot_ids[1]
         else:
-            if self._squad_2 is None:
-                self._squad_2 = squad
-                self._hex_map_ref.itemconfig(self._squad_slot_ids[1], window=squad.get_squad_icon())
-                return self._squad_slot_ids[1]
-            else:
-                #FIXME: Add error processing for full hex
-                print("Hex is full, can't add")
+            #FIXME: Add error processing for full hex
+            print("Hex is full, can't add")
+            return
+
+    # def remove_squad(self, squad_slot_id):
+    #     print("Removing squad...")
+    #     if squad_slot_id == self._squad_slot_ids[0]:
+    #         print("Clearing reference from slot " + str(self._squad_slot_ids[0]))
+    #         self._squad_1 = None
+    #         # self._hex_map_ref.itemconfig(squad_slot_id, window=None)
+    #         self._hex_map_ref.delete(squad_slot_id)
+    #     elif squad_slot_id == self._squad_slot_ids[1]:
+    #         print("Clearing reference from slot " + str(self._squad_slot_ids[1]))
+    #         self._squad_2 = None
+    #         # self._hex_map_ref.itemconfig(squad_slot_id, window=None)
+    #         self._hex_map_ref.delete(squad_slot_id)
 
     def remove_squad(self, squad_slot_id):
         print("Removing squad...")
         if squad_slot_id == self._squad_slot_ids[0]:
             print("Clearing reference from slot " + str(self._squad_slot_ids[0]))
             self._squad_1 = None
-            self._hex_map_ref.itemconfig(squad_slot_id, window=None)
+            self._squad_slot_ids[0] = None
+            self._hex_map_ref.delete(squad_slot_id)
         elif squad_slot_id == self._squad_slot_ids[1]:
-            print("Clearing reference from slot " + str(self._squad_slot_ids[0]))
+            print("Clearing reference from slot " + str(self._squad_slot_ids[1]))
             self._squad_2 = None
-            self._hex_map_ref.itemconfig(squad_slot_id, window=None)
+            self._squad_slot_ids[1] = None
+            self._hex_map_ref.delete(squad_slot_id)
 
-    def change_owner(self, name, colour):
-        self._owner = name
+    def change_owner(self, player, colour):
+        self._owner = player
         self._parent.hex_grid.itemconfig(self._id, fill=colour)
-
-        #FIXME: Pass Player object into method instead of attributes
-        # self._owner = player
-        # self._parent.hex_grid.itemconfig(self._id, fill=player.get_colour())
 

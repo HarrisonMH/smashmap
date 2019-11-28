@@ -6,11 +6,12 @@ import tkinter as tk
 
 from squad import Squad
 
-class Player():
 
-    def __init__(self, master, player_data, place_squad_icon_callback, player_menu_callback, hex_menu_callback, battle_popup_callback):
+class Player:
+
+    def __init__(self, master, player_data, create_squad_icon_callback, player_menu_callback, hex_menu_callback, battle_popup_callback):
         self._master = master
-        self._place_squad_icon_callback = place_squad_icon_callback
+        self._create_squad_icon_callback = create_squad_icon_callback
         self._player_menu_callback = player_menu_callback
         self._hex_menu_callback = hex_menu_callback
         self._battle_popup_callback = battle_popup_callback
@@ -52,7 +53,13 @@ class Player():
     def adjust_territory_size(self, increment):
         self._territory_size += increment
 
-    def get_squads(self):
+    def get_squads(self, debug=False):
+        if debug is True:
+            i = 1
+            print("Player squads:")
+            for squad in self._squads:
+                print("Squad ", i, ": ", squad.get_fighter(), " in Hex ", squad.get_location().get_id())
+                i += 1
         return self._squads
 
     def get_hq(self):
@@ -68,9 +75,18 @@ class Player():
     #     # self._squads.append(Squad(self._name, fighter, hex_id, self._place_squad_icon_callback))
     #     self._squads.append(Squad(self, fighter, hex_id, self._place_squad_icon_callback))
 
-    def build_squad(self, fighter, hex):
+    def build_squad(self, fighter, hex, active_menu=None):
         # self._squads.append(Squad(self._name, fighter, hex_id, self._place_squad_icon_callback))
-        self._squads.append(Squad(self, fighter, hex, self._place_squad_icon_callback, self._battle_popup_callback))
+        self._squads.append(Squad(self, fighter, hex, self._create_squad_icon_callback, self._battle_popup_callback))
+        if active_menu is not None:
+            self._squads[-1].refresh_active_menu(active_menu)
+        # print("Building squad in hex: ", hex)
+
+
+    def destroy_squad(self, squad):
+        print("Deleting Squad object: ", squad)
+        self._squads.remove(squad)
+
 
     def show_player_menu(self, event=None):
         self._player_menu_callback(self)

@@ -27,7 +27,8 @@ class HexMap(tk.Frame):
         self._hexes = []
 
         self._create_grid(size)
-        self._create_squad_slots()
+        # self._create_squad_slots()
+        self._define_squad_slot_coords()
         self._create_structure_slots()
         self._label_grid()
 
@@ -38,8 +39,9 @@ class HexMap(tk.Frame):
         curr_y = 50
         margin = 5
         x_offset = (COS_30 * 50) + 3
+        print("Generating grid...")
         for row in range(9):
-            print("Generating row " + str(row))
+            # print("Generating row " + str(row))
             if row == 0 or row == 8:
                 for column in range(5):
                     next_hex = self._create_hex(curr_x, curr_y, size, row, column)
@@ -69,7 +71,10 @@ class HexMap(tk.Frame):
 
     def _create_hex(self, start_x, start_y, size, row, column):
         hex_points = self._calculate_hex_points(start_x, start_y, size)
-        hex_id = self.hex_grid.create_polygon(hex_points[0][0], hex_points[0][1], hex_points[1][0], hex_points[1][1], hex_points[2][0], hex_points[2][1], hex_points[3][0], hex_points[3][1], hex_points[4][0], hex_points[4][1], hex_points[5][0], hex_points[5][1], fill="white", outline="black", activedash=True, width=2)
+        hex_id = self.hex_grid.create_polygon(hex_points[0][0], hex_points[0][1], hex_points[1][0], hex_points[1][1],
+                                              hex_points[2][0], hex_points[2][1], hex_points[3][0], hex_points[3][1],
+                                              hex_points[4][0], hex_points[4][1], hex_points[5][0], hex_points[5][1],
+                                              fill="white", outline="black", activedash=True, width=2)
         self._hex_coord_dict[hex_id] = hex_points
         adjacent_hexes = self._calculate_adjacency(row, column)
         # structure = "None"
@@ -79,14 +84,25 @@ class HexMap(tk.Frame):
         return hex_points[2]
 
 
-    def _create_squad_slots(self):
+    # def _create_squad_slots(self):
+    #     for hex_id in self._hex_coord_dict:
+    #         icon_1_x = self._hex_coord_dict[hex_id][0][0] + (TEST_WIDTH_50 / 4)
+    #         icon_2_x = self._hex_coord_dict[hex_id][0][0] + (TEST_WIDTH_50 * 0.75)
+    #         icon_y = self._hex_coord_dict[hex_id][0][1] + 25
+    #         slot_1 = self.hex_grid.create_window((icon_1_x, icon_y))
+    #         slot_2 = self.hex_grid.create_window((icon_2_x, icon_y))
+    #         self._hexes[hex_id - 1].set_squad_slot_ids([slot_1, slot_2])
+    #     return
+
+
+    def _define_squad_slot_coords(self):
         for hex_id in self._hex_coord_dict:
             icon_1_x = self._hex_coord_dict[hex_id][0][0] + (TEST_WIDTH_50 / 4)
             icon_2_x = self._hex_coord_dict[hex_id][0][0] + (TEST_WIDTH_50 * 0.75)
             icon_y = self._hex_coord_dict[hex_id][0][1] + 25
-            slot_1 = self.hex_grid.create_window((icon_1_x, icon_y))
-            slot_2 = self.hex_grid.create_window((icon_2_x, icon_y))
-            self._hexes[hex_id - 1].set_squad_slot_ids([slot_1, slot_2])
+            slot_1_coords = (icon_1_x, icon_y)
+            slot_2_coords = (icon_2_x, icon_y)
+            self._hexes[hex_id - 1].set_squad_slot_coords([slot_1_coords, slot_2_coords])
         return
 
 
@@ -172,11 +188,11 @@ class HexMap(tk.Frame):
         current_player_index = 0
         for hex in start_positions:
             current_player = player_list[current_player_index]
-            self._hexes[hex - 1].change_owner(current_player.get_name(), current_player.get_colour())
+            self._hexes[hex - 1].change_owner(current_player, current_player.get_colour())
             self._hexes[hex - 1].set_structure("HQ", self.create_structure_callback)
             for adj_hex in self._hexes[hex - 1].get_adjacency_coords():
                 adj_id = self._coords_to_id(adj_hex)
-                self._hexes[adj_id - 1].change_owner(current_player.get_name(), current_player.get_colour())
+                self._hexes[adj_id - 1].change_owner(current_player, current_player.get_colour())
 
             # current_player.set_hq(hex)
             current_player.set_hq(self._hexes[hex - 1])
@@ -186,9 +202,7 @@ class HexMap(tk.Frame):
 
     def create_structure_callback(self, hex, structure):
         if structure == "HQ":
-            # structure_id = self.hex_grid.create_text(hex.get_structure_coords(), text="*", font=(None, 20))
             structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._icon_image_dict["hq"]["map"])
-            # structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._fighter_image_dict["Cloud"]["map"])
             hex.set_structure_id(structure_id)
         elif structure == "Refinery":
             structure_id = self.hex_grid.create_text(hex.get_structure_coords(), text="@", font=(None, 10))
@@ -205,9 +219,10 @@ class HexMap(tk.Frame):
     def create_squad_icon_callback(self, squad):
         squad_hex = squad.get_location()
         squad_icon = tk.Label(self, image=self._parent._fighter_image_dict[squad.get_fighter()]["map"], borderwidth=2,
-                                         relief="ridge", background=self.hex_grid.itemcget(squad_hex.get_id(), "fill"))
+                              relief="ridge", background=self.hex_grid.itemcget(squad_hex.get_id(), "fill"))
         starting_slot = squad_hex.get_first_open_slot()
-        squad.set_squad_icon(squad_icon, starting_slot)
+        # squad.set_squad_icon(squad_icon, starting_slot)
+        squad.set_squad_icon(squad_icon)
         squad_hex.add_squad(squad)
         return
 

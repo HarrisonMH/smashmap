@@ -44,6 +44,9 @@ class SquadMenu(tk.Frame):
         self._build_btn = tk.Button(self, text="Build", font=(None, 10, "bold"), command=self._colonize)
         self._build_btn.grid(row=current_row, column=2, pady=(1, 10))
         current_row += 1
+        self._delete_btn = tk.Button(self, text="Delete Squad", font=(None, 10, "bold"), command=self._delete_squad)
+        self._delete_btn.grid(row=current_row, column=2, pady=(1, 10))
+        current_row += 1
         self._action_menu = tk.Frame(self)
 
 
@@ -82,8 +85,8 @@ class SquadMenu(tk.Frame):
     def _colonize(self):
         current_loc = self._squad.get_location()
         hex_list = self._hex_map_ref.get_hex_list()
-        if current_loc.get_owner() == "None":
-            current_loc.change_owner(self._squad.get_owner().get_name(), self._squad.get_owner().get_colour())
+        if current_loc.get_owner() is None:
+            current_loc.change_owner(self._squad.get_owner(), self._squad.get_owner().get_colour())
             self._squad.take_turn()
             self._squad.refresh_active_menu(self._parent_menu_str)
 
@@ -98,3 +101,6 @@ class SquadMenu(tk.Frame):
     def _release_button(self, event):
         event.widget.config(relief="raised")
 
+
+    def _delete_squad(self):
+        self._squad.destroy_squad(self._parent_menu_str)
