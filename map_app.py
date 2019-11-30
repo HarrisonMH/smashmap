@@ -14,6 +14,7 @@ from start_menu import StartMenu
 from bottom_menu import BottomMenu
 from player import Player
 from player_menu import PlayerMenu
+from battle_popup import BattlePopup
 from PIL import Image, ImageTk, ImageOps
 
 COS_30 = math.cos(math.radians(30))
@@ -75,6 +76,9 @@ class MainWindow(tk.Frame):
 
 
     def _battle_popup_callback(self, atk_squad, target_hex):
+        self._battle_popup = BattlePopup(self, atk_squad, target_hex, self._fighter_image_dict,
+                                         self._close_battle_popup_callback, self._hex_map)
+        """
         self._battle_alert = tk.Toplevel(self, borderwidth=4, relief="raised")
         self._battle_alert.title("BATTLE!")
         self._battle_alert.geometry("+400+300")
@@ -144,9 +148,10 @@ class MainWindow(tk.Frame):
         self._victory_select_defender = tk.Radiobutton(self._battle_alert, indicatoron=0, text=def_squad.get_fighter(),
                                                        variable=v_victor, value=1)
         self._victory_select_defender.grid(row=current_row, column=4, columnspan=2, padx=5, pady=10)
+        """
 
-
-
+    def _close_battle_popup_callback(self):
+        self._battle_popup.destroy()
 
     def _generate_fighter_list(self):
         fighter_list = []

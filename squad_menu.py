@@ -4,6 +4,7 @@
 
 import tkinter as tk
 
+
 class SquadMenu(tk.Frame):
 
     def __init__(self, master, squad, hex_map, parent_menu_str):
@@ -88,12 +89,14 @@ class SquadMenu(tk.Frame):
         if current_loc.get_owner() is None:
             current_loc.change_owner(self._squad.get_owner(), self._squad.get_owner().get_colour())
             self._squad.take_turn()
+            self._squad.get_owner().adjust_territory_size(1)
             self._squad.refresh_active_menu(self._parent_menu_str)
 
 
     def _move_click(self, event):
         event.widget.config(relief="sunken")
-        self._squad.move_squad(event, self._hex_map_ref, self._parent_menu_str)
+        new_loc_id = int(event.widget.cget("text"))
+        self._squad.move_squad(new_loc_id, self._hex_map_ref, self._parent_menu_str)
         self._move_btn.config(relief="raised")
         self._action_menu.grid_forget()
 

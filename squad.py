@@ -70,8 +70,8 @@ class Squad:
         self._squad_icon = icon_reference
         self._squad_icon.bind("<Button-1>", self._map_icon_click)
 
-    def move_squad(self, event, hex_map_ref, parent_menu_str):
-        new_loc_id = int(event.widget.cget("text"))
+    def move_squad(self, new_loc_id, hex_map_ref, parent_menu_str):
+        # new_loc_id = int(event.widget.cget("text"))
         hex_list = hex_map_ref.get_hex_list()
         new_loc_hex = hex_list[new_loc_id - 1]
         # print("Hex " + str(new_loc_hex.get_id()) + " occupied: " + str(new_loc_hex.check_if_squad_present()))
@@ -81,7 +81,8 @@ class Squad:
             # hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
             self._hex_location.remove_squad(self._squad_slot_id)
             new_loc_hex.add_squad(self)
-            if new_loc_hex.get_owner() != self._owner:
+            if new_loc_hex.get_owner() != self._owner and new_loc_hex.get_owner() is not None:
+                new_loc_hex.get_owner().adjust_territory_size(-1)
                 new_loc_hex.change_owner(None, "white")
             self.take_turn()
             self.refresh_active_menu(parent_menu_str)
