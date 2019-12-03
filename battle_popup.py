@@ -90,6 +90,7 @@ class BattlePopup(tk.Toplevel):
                                                        variable=self._v_victor, value=0, font=(None, 14),
                                                        command=self._select_wining_squad)
         self._victory_select_attacker.grid(row=current_row, column=0, columnspan=2, padx=5, pady=10)
+        self._victory_select_attacker.deselect()
         self._victor_label = tk.Label(self, text="Select Winner", font=(None, 16))
         self._victor_label.grid(row=current_row, column=2, columnspan=2, padx=5, pady=10)
         self._victory_select_defender = tk.Radiobutton(self, indicatoron=0, variable=self._v_victor, value=1,
@@ -117,14 +118,14 @@ class BattlePopup(tk.Toplevel):
 
     def _resolve_battle(self):
         if self._v_victor.get() == 0:
-            self._def_squads[self._v_defender.get()].destroy_squad()
-            # FIXME: Increment squad kill count
+            self._def_squads[self._v_defender.get()].destroy_squad("hex")
+            self._atk_squad.increment_kills(1)
             if len(self._def_hex.get_squads()) == 0:
                 self._atk_squad.move_squad(self._def_hex.get_id(), self._hex_map_ref, "hex")
             else:
                 self._atk_squad.take_turn()
-        elif self._v_victor.get == 1:
-            self._atk_squad.destroy_squad()
-            # FIXME: Increment squad kill count
+        elif self._v_victor.get() == 1:
+            self._atk_squad.destroy_squad("hex")
+            self._def_squads[self._v_defender.get()].increment_kills(1)
                 
         self._close_battle_popup()

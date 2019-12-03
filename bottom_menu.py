@@ -37,7 +37,7 @@ class BottomMenu(tk.Frame):
             self._player_button_list[-1].bind("<Button-1>", player.show_player_menu)
             current_col += 1
 
-        self._end_button = tk.Button(self, text = "Refresh All", command=self._end_turn_callback)
-        self._end_button.grid(row=0, column=current_col)
-        current_col += 1
+        # self._end_button = tk.Button(self, text="Refresh All", command=self._end_turn_callback)
+        # self._end_button.grid(row=0, column=current_col)
+        # current_col += 1
 

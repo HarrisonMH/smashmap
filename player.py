@@ -44,8 +44,11 @@ class Player:
     def get_income(self):
         return self._income
 
-    def set_income(self, income):
-        self._income = income
+    def adjust_income(self, amount):
+        self._income += amount
+
+    def collect_income(self):
+        self._resources += self._income
 
     def get_territory_size(self):
         return self._territory_size
@@ -61,6 +64,10 @@ class Player:
                 print("Squad ", i, ": ", squad.get_fighter(), " in Hex ", squad.get_location().get_id())
                 i += 1
         return self._squads
+
+    def refresh_player_squads(self):
+        for squad in self.get_squads():
+            squad.refresh_turn()
 
     def get_hq(self):
         return self._hq
@@ -82,11 +89,15 @@ class Player:
             self._squads[-1].refresh_active_menu(active_menu)
         # print("Building squad in hex: ", hex)
 
-
     def destroy_squad(self, squad):
         print("Deleting Squad object: ", squad)
         self._squads.remove(squad)
 
+    def check_remaining_actions(self):
+        for squad in self._squads:
+            if squad.get_turn_status() is False:
+                return True
+        return False
 
     def show_player_menu(self, event=None):
         self._player_menu_callback(self)

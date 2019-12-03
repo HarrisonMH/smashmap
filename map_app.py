@@ -15,6 +15,7 @@ from bottom_menu import BottomMenu
 from player import Player
 from player_menu import PlayerMenu
 from battle_popup import BattlePopup
+from end_turn_popup import EndTurnPopup
 from PIL import Image, ImageTk, ImageOps
 
 COS_30 = math.cos(math.radians(30))
@@ -39,8 +40,8 @@ class MainWindow(tk.Frame):
         self._create_widgets(master)
 
     def _create_widgets(self, master):
-        self._hex_map = HexMap(master, self, 50, self._hex_menu_callback)
-        self._hex_map.grid(column=0, row=0, columnspan=10, rowspan = 20)
+        self._hex_map = HexMap(master, self, 50, self._hex_menu_callback, self._end_turn_callback)
+        self._hex_map.grid(column=0, row=0, columnspan=10, rowspan=20)
         self.side_menu = StartMenu(master, self._fighter_list, self._start_game_callback)
         self.side_menu.grid(column=11, row=0)
 
@@ -61,7 +62,7 @@ class MainWindow(tk.Frame):
         # self._hex_map.grid(column=0, row=0, columnspan=10, rowspan=20)
 
         # self.bottom_menu = BottomMenu(self._master, player_data, self._player_menu_callback)
-        self.bottom_menu = BottomMenu(self._master, self._players, self._player_menu_callback, self.end_turn_callback)
+        self.bottom_menu = BottomMenu(self._master, self._players, self._player_menu_callback, self._end_turn_callback)
         self.bottom_menu.grid(column=0, row=21, pady=5)
 
 
@@ -78,77 +79,7 @@ class MainWindow(tk.Frame):
     def _battle_popup_callback(self, atk_squad, target_hex):
         self._battle_popup = BattlePopup(self, atk_squad, target_hex, self._fighter_image_dict,
                                          self._close_battle_popup_callback, self._hex_map)
-        """
-        self._battle_alert = tk.Toplevel(self, borderwidth=4, relief="raised")
-        self._battle_alert.title("BATTLE!")
-        self._battle_alert.geometry("+400+300")
-        self._battle_alert.resizable(False, False)
-        # self._battle_alert.overrideredirect(True)
 
-        atk_player = atk_squad.get_owner()
-        def_player = target_hex.get_squads()[0].get_owner()
-        current_row = 0
-        header_string = "BATTLE IN HEX " + str(target_hex.get_id()) + "!"
-        self._heading = tk.Label(self._battle_alert, text=header_string, font=(None, 20, "bold"))
-        self._heading.grid(row=current_row, column=0, columnspan=6)
-        current_row += 1
-        self._atk_header = tk.Label(self._battle_alert, text="ATTACKER", font=(None, 16))
-        self._atk_header.grid(row=current_row, column=0, columnspan=2)
-        self._def_header = tk.Label(self._battle_alert, text="DEFENDER", font=(None, 16))
-        self._def_header.grid(row=current_row, column=4, columnspan=2)
-        current_row += 1
-
-        self._atk_name = tk.Label(self._battle_alert, text=atk_player.get_name(), width=15, font=(None, 16), bg=atk_player.get_colour(), borderwidth=3, relief="solid")
-        self._atk_name.grid(row=current_row, column=0, columnspan=2, padx=5, pady=5)
-        self._def_name = tk.Label(self._battle_alert, text=def_player.get_name(), width=15, font=(None, 16), bg=def_player.get_colour(), borderwidth=3, relief="solid")
-        self._def_name.grid(row=current_row, column=4, columnspan=2, padx=5, pady=5)
-        current_row += 1
-
-        if len(target_hex.get_squads()) == 1:
-            def_col_width = 2
-        else:
-            def_col_width = 1
-            self._def_select_label = tk.Label(self._battle_alert, text="Select Defending Squad:", font=(None, 12, "bold"))
-            self._def_select_label.grid(row=current_row, column=4, columnspan=2)
-            current_row += 1
-
-        attacker_image = self._fighter_image_dict[atk_squad.get_fighter()]["battle"]
-        self._attacker_icon = tk.Label(self._battle_alert, image=attacker_image)
-        self._attacker_icon.grid(row=current_row, column=1, padx=5)
-        self._vs_label = tk.Label(self._battle_alert, text="VS.", font=(None, 40))
-        self._vs_label.grid(row=current_row, column=2, columnspan=2, padx=5, pady=10)
-        current_col = 4
-
-        self._def_squads_icons = []
-
-        def_squads = target_hex.get_squads()
-        v_squad = tk.IntVar()
-        squad_num = 0
-        for def_squad in def_squads:
-            def_squad_image = self._fighter_image_dict[def_squad.get_fighter()]["battle"]
-            if len(target_hex.get_squads()) == 2:
-                self._def_squads_icons.append(tk.Radiobutton(self._battle_alert, indicatoron=0, image=def_squad_image,
-                                                             variable=v_squad, value=squad_num, borderwidth=3,
-                                                             command=self._select_defending_squad))
-                squad_num += 1
-            else:
-                self._def_squads_icons.append(tk.Label(self._battle_alert, image=def_squad_image))
-            self._def_squads_icons[-1].grid(row=current_row, column=current_col, columnspan=def_col_width, padx=5, pady=10)
-
-            current_col += 1
-
-        current_row += 1
-
-        v_victor = tk.IntVar()
-        self._victory_select_attacker = tk.Radiobutton(self._battle_alert, indicatoron=0, text=atk_squad.get_fighter(),
-                                                       variable=v_victor, value=0)
-        self._victory_select_attacker.grid(row=current_row, column=0, columnspan=2, padx=5, pady=10)
-        self._victor_label = tk.Label(self._battle_alert, text="Confirm Winner", font=(None, 16))
-        self._victor_label.grid(row=current_row, column=2, columnspan=2, padx=5, pady=10)
-        self._victory_select_defender = tk.Radiobutton(self._battle_alert, indicatoron=0, text=def_squad.get_fighter(),
-                                                       variable=v_victor, value=1)
-        self._victory_select_defender.grid(row=current_row, column=4, columnspan=2, padx=5, pady=10)
-        """
 
     def _close_battle_popup_callback(self):
         self._battle_popup.destroy()
@@ -219,11 +150,30 @@ class MainWindow(tk.Frame):
     def get_active_menu(self):
         return self._active_menu
 
+    def _confirm_end_turn(self, player_list):
+        self._end_turn_popup = EndTurnPopup(self, player_list, self._close_confirm_end_turn, self.end_turn)
 
-    def end_turn_callback(self):
+    def _close_confirm_end_turn(self):
+        self._end_turn_popup.destroy()
+
+
+    def _end_turn_callback(self):
+        players_actions_remaining = []
         for player in self._players:
-            for squad in player.get_squads():
-                squad.refresh_turn()
+            if player.check_remaining_actions() is True:
+                players_actions_remaining.append(player)
+        if len(players_actions_remaining) > 0:
+            self._confirm_end_turn(players_actions_remaining)
+        else:
+            self.end_turn()
+
+
+    def end_turn(self):
+        for player in self._players:
+            player.collect_income()
+            player.refresh_player_squads()
+
+
 
 
 if __name__ == "__main__":

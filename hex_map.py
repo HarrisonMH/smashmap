@@ -15,13 +15,14 @@ TEST_WIDTH_50 = COS_30 * 100
 
 class HexMap(tk.Frame):
 
-    def __init__(self, master, parent, size, hex_menu_callback):
+    def __init__(self, master, parent, size, hex_menu_callback, end_turn_callback):
         super().__init__(master)
         self._master = master
         self._parent = parent
         self.hex_grid = tk.Canvas(self, height=780, width=900, bg="white")
         self.hex_grid.grid(column=0, row=1)
         self._hex_menu_callback = hex_menu_callback
+        self._end_turn_callback = end_turn_callback
 
         self._hex_coord_dict = {}
         self._hexes = []
@@ -31,6 +32,7 @@ class HexMap(tk.Frame):
         self._define_squad_slot_coords()
         self._create_structure_slots()
         self._label_grid()
+        self._create_master_menu()
 
 
     def _create_grid(self, size):
@@ -68,6 +70,13 @@ class HexMap(tk.Frame):
                 curr_x = start_x - (x_offset * (7 - row))
             curr_y = curr_y + (COS_30 * 50 * 2) - 7
 
+    def _create_master_menu(self):
+        self._map_menu = tk.Frame()
+        self._end_turn_btn = tk.Button(self._map_menu, text="End Turn", command=self._end_turn_callback)
+        self._end_turn_btn.pack()
+
+        self._grid_menu_window = self.hex_grid.create_window(50, 50, height=20, window=self._map_menu)
+
 
     def _create_hex(self, start_x, start_y, size, row, column):
         hex_points = self._calculate_hex_points(start_x, start_y, size)
@@ -77,10 +86,11 @@ class HexMap(tk.Frame):
                                               fill="white", outline="black", activedash=True, width=2)
         self._hex_coord_dict[hex_id] = hex_points
         adjacent_hexes = self._calculate_adjacency(row, column)
+        ring_number = self.find_ring_number((row, column))
         # structure = "None"
         # if hex_id == 31:
         #     structure = "Refinery"
-        self._hexes.append(Hex(self.hex_grid, self._master, self, hex_id, self._hex_menu_callback, row, column, adjacent_hexes))
+        self._hexes.append(Hex(self.hex_grid, self._master, self, hex_id, self._hex_menu_callback, row, column, adjacent_hexes, ring_number))
         return hex_points[2]
 
 
@@ -169,6 +179,32 @@ class HexMap(tk.Frame):
 
         return valid_hexes
 
+    def find_ring_number(self, grid_coords):
+        row = grid_coords[0]
+        col = grid_coords[1]
+        if row == 0 or row == 8:
+            return 1
+        elif row == 1 or row == 7:
+            col_max = 5
+        elif row == 2 or row == 6:
+            col_max = 6
+        elif row == 3 or row == 5:
+            col_max = 7
+        elif row == 4:
+            col_max = 8
+
+        if col == 0 or col == col_max:
+            return 1
+        if col == 1 or col == col_max - 1:
+            return 2
+        if col == 2 or col == col_max - 2:
+            return 3
+        if col == 3 or col == col_max - 3:
+            return 4
+        if col == 4 and col == col_max - 4:
+            return 5
+
+
 
     def _coords_to_id(self, coords):
         """Translates 2D coordinates to a Hex ID"""
@@ -183,6 +219,14 @@ class HexMap(tk.Frame):
     def initialize_start_positions(self, player_data, player_list):
         centre_hex = 31
         self._hexes[centre_hex - 1].set_structure("Refinery", self.create_structure_callback)
+
+        factory_positions = [15, 21, 24, 38, 41, 47]
+        for hex in factory_positions:
+            self._hexes[hex - 1].set_structure("Factory", self.create_structure_callback)
+
+        mine_positions = [3, 12, 18, 44, 50, 59, 22, 23, 30, 32, 39, 40]
+        for hex in mine_positions:
+            self._hexes[hex - 1].set_structure("Mine", self.create_structure_callback)
 
         start_positions = [1, 5, 27, 35, 57, 61]
         current_player_index = 0
@@ -204,9 +248,20 @@ class HexMap(tk.Frame):
         if structure == "HQ":
             structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._icon_image_dict["hq"]["map"])
             hex.set_structure_id(structure_id)
+            hex.set_value(175)
         elif structure == "Refinery":
             structure_id = self.hex_grid.create_text(hex.get_structure_coords(), text="@", font=(None, 10))
             hex.set_structure_id(structure_id)
+            hex.set_value(200)
+        elif structure == "Factory":
+            structure_id = self.hex_grid.create_image(hex.get_structure_coords(),
+                                                      image=self._parent._icon_image_dict["factory"]["map"])
+            hex.set_structure_id(structure_id)
+        elif structure == "Mine":
+            structure_id = self.hex_grid.create_image(hex.get_structure_coords(),
+                                                      image=self._parent._icon_image_dict["mine"]["map"])
+            hex.set_structure_id(structure_id)
+            hex.set_value(50)
 
 
     # def create_squad_icon_callback(self, hex_id, fighter, set_squad_icon_callback):

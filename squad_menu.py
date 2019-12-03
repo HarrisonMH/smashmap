@@ -3,6 +3,7 @@
 # Define attributes of SquadMenu class, which is a sub-menu of the Player_menu
 
 import tkinter as tk
+from move_button import MoveButton
 
 
 class SquadMenu(tk.Frame):
@@ -63,33 +64,29 @@ class SquadMenu(tk.Frame):
         self._move_menu = tk.Frame(self)
 
         for i, hex_id in enumerate(adj_hexes):
-            adj_squads = hex_list[hex_id - 1].get_squads()
+            adj_hex = hex_list[hex_id - 1]
+            adj_squads = adj_hex.get_squads()
             bg_color = None
             btn_state = "normal"
             for squad in adj_squads:
-                if squad is not None:
-                    if squad.get_owner_name() != self._squad.get_owner_name():
-                        bg_color = "red"
-                        break
-                    else:
-                        if not hex_list[hex_id - 1].check_open_space():
-                            btn_state = "disabled"
-
-            self._move_buttons.append(tk.Label(self._move_menu, text=str(hex_id), relief="raised", background = bg_color, padx=5, pady=5, state=btn_state))
+                if squad.get_owner_name() != self._squad.get_owner_name():
+                    bg_color = "red"
+                if not adj_hex.check_open_space() or (adj_hex.get_structure() == "HQ" and adj_hex.get_owner != self._squad.get_owner()):
+                    btn_state = "disabled"
+            self._move_buttons.append(MoveButton(self._move_menu, hex_id, self._parent_menu_str, self._hex_map_ref,
+                                                 self._squad.move_squad, text=str(hex_id), background=bg_color, state=btn_state))
             self._move_buttons[-1].grid(row=0, column=i)
-            self._move_buttons[-1].bind("<Button-1>", self._move_click)
-            self._move_buttons[-1].bind("<ButtonRelease-1>", self._release_button)
         self._action_menu = self._move_menu
         self._action_menu.grid(row=15, column=0)
 
 
     def _colonize(self):
         current_loc = self._squad.get_location()
-        hex_list = self._hex_map_ref.get_hex_list()
         if current_loc.get_owner() is None:
             current_loc.change_owner(self._squad.get_owner(), self._squad.get_owner().get_colour())
             self._squad.take_turn()
             self._squad.get_owner().adjust_territory_size(1)
+            self._squad.get_owner().adjust_income(current_loc.get_value())
             self._squad.refresh_active_menu(self._parent_menu_str)
 
 

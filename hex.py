@@ -5,7 +5,7 @@
 
 class Hex:
 
-    def __init__(self, hex_map, master, parent, id, hex_menu_callback, row, column, adjacent_coords):
+    def __init__(self, hex_map, master, parent, id, hex_menu_callback, row, column, adjacent_coords, ring_number):
         self._master = master
         self._parent = parent
         self._hex_map_ref = hex_map
@@ -14,6 +14,7 @@ class Hex:
         self._id = id
         self._coords = (row, column)
         self._adjacent_coords = adjacent_coords
+        self._ring_number = ring_number
         self._structure_coords = None
         self._structure_id = None
         self._adjacent_ids = self.set_adjacent_ids(parent, adjacent_coords)
@@ -51,6 +52,14 @@ class Hex:
         else:
             return self._owner.get_name()
 
+    def get_value(self):
+        return self._value
+
+    def set_value(self, new_value):
+        self._value = new_value
+
+    def get_ring_depth(self):
+        return self._ring_number
 
     def get_structure(self):
         return self._structure

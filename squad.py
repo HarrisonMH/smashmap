@@ -83,6 +83,7 @@ class Squad:
             new_loc_hex.add_squad(self)
             if new_loc_hex.get_owner() != self._owner and new_loc_hex.get_owner() is not None:
                 new_loc_hex.get_owner().adjust_territory_size(-1)
+                new_loc_hex.get_owner().adjust_income(new_loc_hex.get_value() * -1)
                 new_loc_hex.change_owner(None, "white")
             self.take_turn()
             self.refresh_active_menu(parent_menu_str)

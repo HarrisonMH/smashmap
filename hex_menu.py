@@ -19,38 +19,69 @@ class HexMenu(tk.Frame):
         self._fighter_list = fighter_list
         self._squad_icon_list = []
 
+        self._hex_owner = self._hex.get_owner()
+        if self._hex_owner is not None:
+            self._player_str = "Player " + str(self._hex_owner.get_player_number())
+            self._player_colour = self._hex_owner.get_colour()
+        else:
+            self._player_str = "Unclaimed Hex"
+            self._player_colour = "white"
+
         self._create_widgets()
 
 
     def _create_widgets(self):
         self._current_row = 0
+        if self._hex_owner is not None:
+            self._player_num_header = tk.Label(self, width=30, text=self._player_str,
+                                               font=(None, 16))
+            self._player_num_header.grid(row=0, column=0, columnspan=5)
+            self._current_row += 1
+        self._player_name_header = tk.Label(self, text=self._hex.get_owner_name_str(), width=10, font=(None, 16),
+                                            bg=self._player_colour, borderwidth=2, relief="solid")
+        self._player_name_header.grid(row=self._current_row, column=0, columnspan=5, pady=(1, 10))
+        self._current_row += 1
         self._header = tk.Label(self, width=30, text="Hex " + str(self._hex.get_id()), font=(None, 16))
         self._header.grid(row=self._current_row, column=0, columnspan=2, pady=(1, 10))
         self._current_row += 1
-        self._owner_label = tk.Label(self, text="Owner: " + self._hex.get_owner_name_str(), font=(None, 10))
-        self._owner_label.grid(row=self._current_row, column=0, columnspan=2)
-        self._current_row += 1
-        self._strucures_header = tk.Label(self, text="Structure Present: " + self._hex.get_structure())
-        self._strucures_header.grid(row=self._current_row, column=0, columnspan=2)
-        self._current_row += 1
-        self._adjacency_label = tk.Label(self, text="Hex Coordinates: " + str(self._hex.get_coords()))
-        self._adjacency_label.grid(row=self._current_row, column=0, columnspan=2)
-        self._current_row += 1
-        self._adjacency_label = tk.Label(self, text="Adjacent Hexes: " + self.get_adjacency_str())
-        self._adjacency_label.grid(row=self._current_row, column=0, columnspan=2)
-        self._current_row += 1
+        # self._owner_label = tk.Label(self, text="Owner: " + self._hex.get_owner_name_str(), font=(None, 10))
+        # self._owner_label.grid(row=self._current_row, column=0, columnspan=2)
+        # self._current_row += 1
+        # self._structures_header = tk.Label(self, text="Structure Present: " + self._hex.get_structure())
+        # self._structures_header.grid(row=self._current_row, column=0, columnspan=2)
+        # self._current_row += 1
+        # self._adjacency_label = tk.Label(self, text="Hex Coordinates: " + str(self._hex.get_coords()))
+        # self._adjacency_label.grid(row=self._current_row, column=0, columnspan=2)
+        # self._current_row += 1
+        # self._adjacency_label = tk.Label(self, text="Adjacent Hexes: " + self.get_adjacency_str())
+        # self._adjacency_label.grid(row=self._current_row, column=0, columnspan=2)
+        # self._current_row += 1
+        # self._ring_label = tk.Label(self, text="Ring Depth: " + str(self._hex.get_ring_depth()))
+        # self._ring_label.grid(row=self._current_row, column=0, columnspan=2)
+        # self._current_row += 1
 
-        if self._hex.get_structure() == "HQ":
-            self._structure_header = tk.Label(self, text="Structure: HQ", font=(None, 14))
+        structure = self._hex.get_structure()
+        if structure != "None":
+            if structure == "Mine":
+                structure_str = "Mine (+25 Res. +1 VP)"
+            elif structure == "Factory":
+                structure_str = "Factory (Build)"
+            elif structure == "Refinery":
+                structure_str = "Refinery (+175 Res, +5 VP)"
+            elif structure == "HQ":
+                structure_str = "HQ (+175 Res, Build)"
+            self._structure_header = tk.Label(self, text="Structure: " + structure_str, font=(None, 14))
             self._structure_header.grid(row=self._current_row, column=0, columnspan=2, pady=(1, 10))
             self._current_row += 1
-            self._build_squad_label = tk.Label(self, text="New squad: ")
-            self._build_squad_label.grid(row=self._current_row, column=0, columnspan=1, pady=10)
-            self._build_squad_picker = ttk.Combobox(self, values=self._fighter_list)
-            self._build_squad_picker.grid(row=self._current_row, column=1, columnspan=1, pady=10)
-            self._build_squad_btn = tk.Button(self, text="Build", font=(None, 10, "bold"), command=self._build_new_squad)
-            self._build_squad_btn.grid(row=self._current_row, column=2, columnspan=1, pady=10)
-            self._current_row += 1
+            if structure == "HQ" or structure == "Factory":
+                self._build_squad_label = tk.Label(self, text="New squad: ")
+                self._build_squad_label.grid(row=self._current_row, column=0, columnspan=1, pady=10)
+                self._build_squad_picker = ttk.Combobox(self, values=self._fighter_list)
+                self._build_squad_picker.grid(row=self._current_row, column=1, columnspan=1, pady=10)
+                self._current_row += 1
+                self._build_squad_btn = tk.Button(self, text="Build", font=(None, 10, "bold"), command=self._build_new_squad)
+                self._build_squad_btn.grid(row=self._current_row, column=0, columnspan=1, pady=10)
+                self._current_row += 1
 
         # Placeholder for squad menu
         self._squad_menu = tk.Frame()
