@@ -20,7 +20,7 @@ class Hex:
         self._adjacent_ids = self.set_adjacent_ids(parent, adjacent_coords)
         self._squad_slot_ids = [None, None]
         self._squad_slot_coords = None
-        self._value = 25
+        self._res_value = 25
         self._structure = "None"
         self._squad_1 = None
         self._squad_2 = None
@@ -53,10 +53,18 @@ class Hex:
             return self._owner.get_name()
 
     def get_value(self):
-        return self._value
+        return self._res_value
 
     def set_value(self, new_value):
-        self._value = new_value
+        self._res_value = new_value
+
+    def get_vp_value(self):
+        if self._structure != "None":
+            if self._structure == "Mine":
+                return self._ring_number + 1
+            elif self._structure == "Refinery":
+                return self._ring_number + 5
+        return self._ring_number
 
     def get_ring_depth(self):
         return self._ring_number

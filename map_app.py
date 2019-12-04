@@ -36,12 +36,13 @@ class MainWindow(tk.Frame):
         self._in_progress = False
         self._players = []
         self._active_menu = "start"
+        self._turn_number = 1
 
         self._create_widgets(master)
 
     def _create_widgets(self, master):
         self._hex_map = HexMap(master, self, 50, self._hex_menu_callback, self._end_turn_callback)
-        self._hex_map.grid(column=0, row=0, columnspan=10, rowspan=20)
+        self._hex_map.grid(column=0, row=0, columnspan=6, rowspan=20)
         self.side_menu = StartMenu(master, self._fighter_list, self._start_game_callback)
         self.side_menu.grid(column=11, row=0)
 
@@ -62,8 +63,8 @@ class MainWindow(tk.Frame):
         # self._hex_map.grid(column=0, row=0, columnspan=10, rowspan=20)
 
         # self.bottom_menu = BottomMenu(self._master, player_data, self._player_menu_callback)
-        self.bottom_menu = BottomMenu(self._master, self._players, self._player_menu_callback, self._end_turn_callback)
-        self.bottom_menu.grid(column=0, row=21, pady=5)
+        self.bottom_menu = BottomMenu(self._master, self._players, self._player_menu_callback, self._end_turn_callback, self._icon_image_dict)
+        self.bottom_menu.grid(column=0, row=21, columnspan=6, pady=5)
 
 
     def _player_menu_callback(self, player):
@@ -150,12 +151,34 @@ class MainWindow(tk.Frame):
     def get_active_menu(self):
         return self._active_menu
 
+    def sort_players_by_vp(self):
+        sorted_list = []
+        max_value = 0
+        for player in self._players:
+            if len(sorted_list) == 0:
+                sorted_list.append(player)
+                max_value = player.get_vp()
+            elif player.get_vp() < sorted_list[0].get_vp():
+                sorted_list.insert(0, player)
+            elif player.get_vp() >= max_value:
+                sorted_list.append(player)
+                max_value = player.get_vp()
+            else:
+                for i, player_sorted in enumerate(sorted_list):
+                    if player.get_vp() >= player_sorted.get_vp() and player.get_vp() < sorted_list[i+1].get_vp():
+                        print(player.get_name(), ": ", player.get_vp(), " is between ", player_sorted.get_name(), ": ", player_sorted.get_vp(), " and ", sorted_list[i+1].get_name(), ": ", sorted_list[i+1].get_vp())
+                        sorted_list.insert(i+1, player)
+                        break
+        print("New turn order:")
+        for player in sorted_list:
+            print(player.get_name())
+        return sorted_list
+
     def _confirm_end_turn(self, player_list):
         self._end_turn_popup = EndTurnPopup(self, player_list, self._close_confirm_end_turn, self.end_turn)
 
     def _close_confirm_end_turn(self):
         self._end_turn_popup.destroy()
-
 
     def _end_turn_callback(self):
         players_actions_remaining = []
@@ -167,11 +190,14 @@ class MainWindow(tk.Frame):
         else:
             self.end_turn()
 
-
     def end_turn(self):
+        self._turn_number += 1
         for player in self._players:
             player.collect_income()
+            player.collect_vp()
             player.refresh_player_squads()
+        sorted_player_list = self.sort_players_by_vp()
+        self.bottom_menu.refresh_widget_order(sorted_player_list)
 
 
 

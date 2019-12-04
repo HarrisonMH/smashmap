@@ -50,15 +50,21 @@ class HexMenu(tk.Frame):
         # self._structures_header = tk.Label(self, text="Structure Present: " + self._hex.get_structure())
         # self._structures_header.grid(row=self._current_row, column=0, columnspan=2)
         # self._current_row += 1
-        # self._adjacency_label = tk.Label(self, text="Hex Coordinates: " + str(self._hex.get_coords()))
-        # self._adjacency_label.grid(row=self._current_row, column=0, columnspan=2)
-        # self._current_row += 1
-        # self._adjacency_label = tk.Label(self, text="Adjacent Hexes: " + self.get_adjacency_str())
-        # self._adjacency_label.grid(row=self._current_row, column=0, columnspan=2)
-        # self._current_row += 1
+        self._coordinate_label = tk.Label(self, text="Hex Coordinates: " + str(self._hex.get_coords()))
+        self._coordinate_label.grid(row=self._current_row, column=0, columnspan=2)
+        self._current_row += 1
+        self._adjacency_label = tk.Label(self, text="Adjacent Hexes: " + self.get_adjacency_str())
+        self._adjacency_label.grid(row=self._current_row, column=0, columnspan=2)
+        self._current_row += 1
         # self._ring_label = tk.Label(self, text="Ring Depth: " + str(self._hex.get_ring_depth()))
         # self._ring_label.grid(row=self._current_row, column=0, columnspan=2)
         # self._current_row += 1
+        self._res_value_label = tk.Label(self, text="Resource Value: " + str(self._hex.get_value()), font=(None, 10))
+        self._res_value_label.grid(row=self._current_row, column=0, columnspan=2)
+        self._current_row += 1
+        self._vp_value_label = tk.Label(self, text="VP Value: " + str(self._hex.get_vp_value()), font=(None, 10))
+        self._vp_value_label.grid(row=self._current_row, column=0, columnspan=2)
+        self._current_row += 1
 
         structure = self._hex.get_structure()
         if structure != "None":

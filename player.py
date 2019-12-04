@@ -23,7 +23,10 @@ class Player:
         self._resources = 250
         self._income = 100
         self._territory_size = 4
+        self._vp = 0
+        self._vp_income = 5
         self._squads = []
+        self._status_bar_ref = None
 
 
     def get_player_number(self):
@@ -40,12 +43,14 @@ class Player:
 
     def adjust_resources(self, amount):
         self._resources += amount
+        self._status_bar_ref.set_res(self._resources)
 
     def get_income(self):
         return self._income
 
     def adjust_income(self, amount):
         self._income += amount
+        self._status_bar_ref.set_res_income(self._income)
 
     def collect_income(self):
         self._resources += self._income
@@ -55,6 +60,21 @@ class Player:
 
     def adjust_territory_size(self, increment):
         self._territory_size += increment
+        self._status_bar_ref.set_territory_size(self._territory_size)
+
+    def get_vp(self):
+        return self._vp
+
+    def collect_vp(self):
+        self._vp += self._vp_income
+        self._status_bar_ref.set_vp(self._vp)
+
+    def get_vp_income(self):
+        return self._vp_income
+
+    def adjust_vp_income(self, amount):
+        self._vp_income += amount
+        self._status_bar_ref.set_vp_income(self._vp_income)
 
     def get_squads(self, debug=False):
         if debug is True:
@@ -77,6 +97,9 @@ class Player:
         if self._starting_squads[0] == self._starting_squads[1]:
             self.adjust_resources(-250)
         self._initialize_squads(self._starting_squads)
+
+    def set_status_bar_ref(self, ref):
+        self._status_bar_ref = ref
 
     # def build_squad(self, fighter, hex_id):
     #     # self._squads.append(Squad(self._name, fighter, hex_id, self._place_squad_icon_callback))

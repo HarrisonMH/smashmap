@@ -119,13 +119,13 @@ class BattlePopup(tk.Toplevel):
     def _resolve_battle(self):
         if self._v_victor.get() == 0:
             self._def_squads[self._v_defender.get()].destroy_squad("hex")
-            self._atk_squad.increment_kills(1)
+            self._atk_squad.increment_kills()
             if len(self._def_hex.get_squads()) == 0:
                 self._atk_squad.move_squad(self._def_hex.get_id(), self._hex_map_ref, "hex")
             else:
                 self._atk_squad.take_turn()
         elif self._v_victor.get() == 1:
             self._atk_squad.destroy_squad("hex")
-            self._def_squads[self._v_defender.get()].increment_kills(1)
+            self._def_squads[self._v_defender.get()].increment_kills()
                 
         self._close_battle_popup()
