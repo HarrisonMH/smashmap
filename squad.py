@@ -5,9 +5,10 @@
 
 class Squad:
 
-    def __init__(self, owner, fighter, location, create_squad_icon_callback, battle_popup_callback):
+    def __init__(self, owner, fighter, location, create_squad_icon_callback, battle_popup_callback, set_selected_squad_callback):
         self._create_squad_icon_callback = create_squad_icon_callback
         self._battle_popup_callback = battle_popup_callback
+        self._set_selected_squad_callback = set_selected_squad_callback
         self._squad_icon = None
         self._squad_slot_id = None
         self._owner = owner
@@ -78,17 +79,22 @@ class Squad:
         if self.check_hex_for_enemy(new_loc_hex) is True:
             self._battle_popup_callback(self, new_loc_hex)
         elif new_loc_hex.check_open_space() is True:
-            # hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
-            self._hex_location.remove_squad(self._squad_slot_id)
-            new_loc_hex.add_squad(self)
-            if new_loc_hex.get_owner() != self._owner and new_loc_hex.get_owner() is not None:
-                new_loc_hex.get_owner().adjust_territory_size(-1)
-                new_loc_hex.get_owner().adjust_income(new_loc_hex.get_value() * -1)
-                new_loc_hex.get_owner().adjust_vp_income(new_loc_hex.get_vp_value() * -1)
-                new_loc_hex.change_owner(None, "white")
-            self.take_turn()
-            self.refresh_active_menu(parent_menu_str)
-            self.set_location(new_loc_hex)
+            if new_loc_hex.get_structure() != "HQ" and new_loc_hex.get_owner != self._owner:
+                # hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
+                self._hex_location.unhighlight_adjacent_hexes()
+                self._hex_location.remove_squad(self._squad_slot_id)
+                new_loc_hex.add_squad(self)
+                if new_loc_hex.get_owner() != self._owner and new_loc_hex.get_owner() is not None:
+                    new_loc_hex.get_owner().adjust_territory_size(-1)
+                    new_loc_hex.get_owner().adjust_income(new_loc_hex.get_value() * -1)
+                    new_loc_hex.get_owner().adjust_vp_income(new_loc_hex.get_vp_value() * -1)
+                    new_loc_hex.change_owner(None, "white")
+                self.take_turn()
+                self.refresh_active_menu(parent_menu_str)
+                self.set_location(new_loc_hex)
+                self.deselect_squad()
+            else:
+                print("Cannot move into enemy HQ")
         else:
             print("Can't move to this position: hex is full")
 
@@ -101,7 +107,17 @@ class Squad:
 
     def _map_icon_click(self, event):
         print("Map icon: ", self._fighter, " in slot ", self._squad_slot_id)
-        # self._squad_icon.config(state="disabled")
+        icon_state = self._squad_icon.cget("state")
+        if icon_state != "disabled" and icon_state != "active":
+            self._squad_icon.config(state="active")
+            self._set_selected_squad_callback(self)
+            self._hex_location.highlight_adjacent_hexes()
+
+
+    def deselect_squad(self):
+        if self._squad_icon.cget("state") != "disabled":
+            self._squad_icon.config(state="normal")
+        self._set_selected_squad_callback(None)
 
     def refresh_active_menu(self, active_menu_str):
         """Takes the name of the active menu in string format and invokes the callback to refresh the active menu."""

@@ -5,11 +5,13 @@
 
 class Hex:
 
-    def __init__(self, hex_map, master, parent, id, hex_menu_callback, row, column, adjacent_coords, ring_number):
+    def __init__(self, hex_map, master, parent, id, hex_menu_callback, row, column, adjacent_coords, ring_number,
+                 get_selected_squad_callback):
         self._master = master
         self._parent = parent
         self._hex_map_ref = hex_map
         self._hex_menu_callback = hex_menu_callback
+        self._get_selected_squad_callback = get_selected_squad_callback
         self._owner = None
         self._id = id
         self._coords = (row, column)
@@ -29,6 +31,9 @@ class Hex:
 
     def show_hex_menu(self, event=None):
         self._hex_menu_callback(self)
+        selected_squad = self._get_selected_squad_callback()
+        if selected_squad is not None:
+            selected_squad.deselect_squad()
 
         # Grey/black hex toggle code:
 
@@ -133,13 +138,6 @@ class Hex:
             squad_list.append(self._squad_2)
         return squad_list
 
-    # def get_first_open_slot(self):
-    #     if self._squad_1 is None:
-    #         return self._squad_slot_ids[0]
-    #     elif self._squad_2 is None:
-    #         return self._squad_slot_ids[1]
-    #     else:
-    #         return None
 
     def get_first_open_slot(self):
         if self._squad_1 is None:
@@ -149,19 +147,6 @@ class Hex:
         else:
             return None
 
-    # def add_squad(self, squad):
-    #     if self._squad_1 is None:
-    #         self._squad_1 = squad
-    #         self._hex_map_ref.itemconfig(self._squad_slot_ids[0], window=squad.get_squad_icon())
-    #         return self._squad_slot_ids[0]
-    #     elif self._squad_2 is None:
-    #         self._squad_2 = squad
-    #         self._hex_map_ref.itemconfig(self._squad_slot_ids[1], window=squad.get_squad_icon())
-    #         return self._squad_slot_ids[1]
-    #     else:
-    #         #FIXME: Add error processing for full hex
-    #         print("Hex is full, can't add")
-    #         return
 
     def add_squad(self, squad):
         if self._squad_1 is None:
@@ -183,18 +168,6 @@ class Hex:
             print("Hex is full, can't add")
             return
 
-    # def remove_squad(self, squad_slot_id):
-    #     print("Removing squad...")
-    #     if squad_slot_id == self._squad_slot_ids[0]:
-    #         print("Clearing reference from slot " + str(self._squad_slot_ids[0]))
-    #         self._squad_1 = None
-    #         # self._hex_map_ref.itemconfig(squad_slot_id, window=None)
-    #         self._hex_map_ref.delete(squad_slot_id)
-    #     elif squad_slot_id == self._squad_slot_ids[1]:
-    #         print("Clearing reference from slot " + str(self._squad_slot_ids[1]))
-    #         self._squad_2 = None
-    #         # self._hex_map_ref.itemconfig(squad_slot_id, window=None)
-    #         self._hex_map_ref.delete(squad_slot_id)
 
     def remove_squad(self, squad_slot_id):
         print("Removing squad...")
@@ -212,4 +185,23 @@ class Hex:
     def change_owner(self, player, colour):
         self._owner = player
         self._parent.hex_grid.itemconfig(self._id, fill=colour)
+
+    def hex_right_click(self, event):
+        print("Right click on hex", self._id)
+        selected_squad = self._get_selected_squad_callback()
+        if selected_squad is not None:
+            valid_moves = selected_squad.get_location().get_adjacent_ids()
+            if self._id in valid_moves:
+                self._get_selected_squad_callback().move_squad(self._id, self._parent, "hex")
+            else:
+                print("Invalid move")
+
+    def highlight_adjacent_hexes(self):
+        for hex_id in self._adjacent_ids:
+            print("Dash value:", self._hex_map_ref.itemcget(hex_id, "dash"))
+            self._hex_map_ref.itemconfig(hex_id, outline="blue", dash=10)
+
+    def unhighlight_adjacent_hexes(self):
+        for hex_id in self._adjacent_ids:
+            self._hex_map_ref.itemconfig(hex_id, outline="black", dash=[])
 

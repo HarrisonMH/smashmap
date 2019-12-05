@@ -80,12 +80,16 @@ class HexMenu(tk.Frame):
             self._structure_header.grid(row=self._current_row, column=0, columnspan=2, pady=(1, 10))
             self._current_row += 1
             if structure == "HQ" or structure == "Factory":
-                self._build_squad_label = tk.Label(self, text="New squad: ")
+                if self._hex_owner is None:
+                    build_state = "disabled"
+                else:
+                    build_state = "normal"
+                self._build_squad_label = tk.Label(self, text="New squad: ", state=build_state)
                 self._build_squad_label.grid(row=self._current_row, column=0, columnspan=1, pady=10)
-                self._build_squad_picker = ttk.Combobox(self, values=self._fighter_list)
+                self._build_squad_picker = ttk.Combobox(self, values=self._fighter_list, state=build_state)
                 self._build_squad_picker.grid(row=self._current_row, column=1, columnspan=1, pady=10)
                 self._current_row += 1
-                self._build_squad_btn = tk.Button(self, text="Build", font=(None, 10, "bold"), command=self._build_new_squad)
+                self._build_squad_btn = tk.Button(self, text="Build", font=(None, 10, "bold"), state=build_state, command=self._build_new_squad)
                 self._build_squad_btn.grid(row=self._current_row, column=0, columnspan=1, pady=10)
                 self._current_row += 1
 

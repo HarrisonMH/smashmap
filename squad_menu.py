@@ -71,9 +71,13 @@ class SquadMenu(tk.Frame):
             for squad in adj_squads:
                 if squad.get_owner_name() != self._squad.get_owner_name():
                     bg_color = "red"
-                # FIXME: Check why squad cannot move back into HQ after first move - triggerd by second term in OR clause below
-                if (not adj_hex.check_open_space()) or (adj_hex.get_structure() == "HQ" and adj_hex.get_owner != self._squad.get_owner()):
-                    btn_state = "disabled"
+            # print("Hex", adj_hex.get_id(), ":")
+            # print("  No open space:", not adj_hex.check_open_space())
+            # print("  Structure is HQ:", adj_hex.get_structure() == "HQ")
+            # print("  Squad Owner == Hex Owner:", adj_hex.get_owner() == self._squad.get_owner())
+            # print("  Structure is HQ and Owners do not match:", (adj_hex.get_structure() == "HQ" and adj_hex.get_owner != self._squad.get_owner()))
+            if (not adj_hex.check_open_space()) or (adj_hex.get_structure() == "HQ" and adj_hex.get_owner() != self._squad.get_owner()):
+                btn_state = "disabled"
             self._move_buttons.append(MoveButton(self._move_menu, hex_id, self._parent_menu_str, self._hex_map_ref,
                                                  self._squad.move_squad, text=str(hex_id), background=bg_color, state=btn_state))
             self._move_buttons[-1].grid(row=0, column=i)

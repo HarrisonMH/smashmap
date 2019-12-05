@@ -37,6 +37,7 @@ class MainWindow(tk.Frame):
         self._players = []
         self._active_menu = "start"
         self._turn_number = 1
+        self._selected_squad = None
 
         self._create_widgets(master)
 
@@ -143,10 +144,26 @@ class MainWindow(tk.Frame):
 
     def _initialize_players(self, player_data):
         for player in player_data:
-            self._players.append(Player(self._master, player_data[player], self._hex_map.create_squad_icon_callback, self._player_menu_callback, self._hex_menu_callback, self._battle_popup_callback))
+            self._players.append(Player(self, player_data[player], self._hex_map.create_squad_icon_callback, self._player_menu_callback, self._hex_menu_callback, self._battle_popup_callback))
 
     def _select_defending_squad(self):
         pass
+
+    def get_turn_number(self):
+        return self._turn_number
+
+    def get_selected_squad(self):
+        return self._selected_squad
+
+    def set_selected_squad(self, squad):
+        if squad is None:
+            self._selected_squad = squad
+            return
+        elif self._selected_squad is not None:
+            self._selected_squad.deselect_squad()
+        self._selected_squad = squad
+        print("Selected squad: ", self._selected_squad.get_fighter())
+
 
     def get_active_menu(self):
         return self._active_menu
@@ -192,6 +209,7 @@ class MainWindow(tk.Frame):
 
     def end_turn(self):
         self._turn_number += 1
+        self._hex_map.adjust_turn_display(self._turn_number)
         for player in self._players:
             player.collect_income()
             player.collect_vp()
@@ -205,7 +223,7 @@ class MainWindow(tk.Frame):
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Smash Map Ladder v0.1")
-    root.geometry("+100+100")
+    root.geometry("+100+50")
     root.resizable(False, False)
     app = MainWindow(root)
     app.mainloop()

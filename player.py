@@ -20,8 +20,8 @@ class Player:
         self._colour = player_data["colour"]
         self._starting_squads = [player_data["fighter1"], player_data["fighter2"]]
         self._hq = None
-        self._resources = 250
-        self._income = 100
+        self._resources = 750
+        self._income = 250
         self._territory_size = 4
         self._vp = 0
         self._vp_income = 5
@@ -43,7 +43,8 @@ class Player:
 
     def adjust_resources(self, amount):
         self._resources += amount
-        self._status_bar_ref.set_res(self._resources)
+        if self._status_bar_ref is not None:
+            self._status_bar_ref.set_res(self._resources)
 
     def get_income(self):
         return self._income
@@ -54,6 +55,7 @@ class Player:
 
     def collect_income(self):
         self._resources += self._income
+        self._status_bar_ref.set_res(self._resources)
 
     def get_territory_size(self):
         return self._territory_size
@@ -106,11 +108,19 @@ class Player:
     #     self._squads.append(Squad(self, fighter, hex_id, self._place_squad_icon_callback))
 
     def build_squad(self, fighter, hex, active_menu=None):
-        # self._squads.append(Squad(self._name, fighter, hex_id, self._place_squad_icon_callback))
-        self._squads.append(Squad(self, fighter, hex, self._create_squad_icon_callback, self._battle_popup_callback))
-        if active_menu is not None:
-            self._squads[-1].refresh_active_menu(active_menu)
-        # print("Building squad in hex: ", hex)
+        # FIXME: Add squad cost calculation logic for duplicates
+        squad_cost = 250
+        if self._resources - squad_cost < 0:
+            print("Player resources insufficient to build squad")
+            return
+        else:
+            self.adjust_resources(squad_cost * -1)
+            self._squads.append(Squad(self, fighter, hex, self._create_squad_icon_callback, self._battle_popup_callback, self._master.set_selected_squad))
+            if hex.get_structure() == "Factory":
+                self._squads[-1].take_turn()
+            if active_menu is not None:
+                self._squads[-1].refresh_active_menu(active_menu)
+            # print("Building squad in hex: ", hex)
 
     def destroy_squad(self, squad):
         print("Deleting Squad object: ", squad)

@@ -72,10 +72,15 @@ class HexMap(tk.Frame):
 
     def _create_master_menu(self):
         self._map_menu = tk.Frame()
+        self._turn_num_label = tk.Label(self._map_menu, text="Turn " + str(self._parent.get_turn_number()), font=(None, 12, "bold"))
+        self._turn_num_label.pack()
         self._end_turn_btn = tk.Button(self._map_menu, text="End Turn", command=self._end_turn_callback)
         self._end_turn_btn.pack()
 
-        self._grid_menu_window = self.hex_grid.create_window(50, 50, height=20, window=self._map_menu)
+        self._grid_menu_window = self.hex_grid.create_window(50, 50, window=self._map_menu)
+
+    def adjust_turn_display(self, value):
+        self._turn_num_label.config(text="Turn " + str(value))
 
 
     def _create_hex(self, start_x, start_y, size, row, column):
@@ -90,7 +95,8 @@ class HexMap(tk.Frame):
         # structure = "None"
         # if hex_id == 31:
         #     structure = "Refinery"
-        self._hexes.append(Hex(self.hex_grid, self._master, self, hex_id, self._hex_menu_callback, row, column, adjacent_hexes, ring_number))
+        self._hexes.append(Hex(self.hex_grid, self._master, self, hex_id, self._hex_menu_callback, row, column, adjacent_hexes, ring_number, self._parent.get_selected_squad))
+        self.hex_grid.tag_bind(hex_id, "<Button-3>", self._hexes[-1].hex_right_click)
         return hex_points[2]
 
 
@@ -205,7 +211,6 @@ class HexMap(tk.Frame):
             return 5
 
 
-
     def _coords_to_id(self, coords):
         """Translates 2D coordinates to a Hex ID"""
         row_total = 0
@@ -263,24 +268,15 @@ class HexMap(tk.Frame):
             hex.set_structure_id(structure_id)
             hex.set_value(50)
 
-
-    # def create_squad_icon_callback(self, hex_id, fighter, set_squad_icon_callback):
-    #     squad_icon = tk.Label(self, image=self._parent._fighter_image_dict[fighter]["map"], borderwidth=2,
-    #                                      relief="ridge", background=self.hex_grid.itemcget(hex_id, "fill"))
-    #     starting_slot = self._hexes[hex_id - 1].add_squad(squad_icon)
-    #     set_squad_icon_callback(squad_icon, starting_slot)
-    #     return
-
     def create_squad_icon_callback(self, squad):
         squad_hex = squad.get_location()
         squad_icon = tk.Label(self, image=self._parent._fighter_image_dict[squad.get_fighter()]["map"], borderwidth=2,
                               relief="ridge", background=self.hex_grid.itemcget(squad_hex.get_id(), "fill"))
-        starting_slot = squad_hex.get_first_open_slot()
+        # starting_slot = squad_hex.get_first_open_slot()
         # squad.set_squad_icon(squad_icon, starting_slot)
         squad.set_squad_icon(squad_icon)
         squad_hex.add_squad(squad)
         return
-
 
     def get_hex_list(self):
         return self._hexes
