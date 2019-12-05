@@ -38,6 +38,7 @@ class MainWindow(tk.Frame):
         self._active_menu = "start"
         self._turn_number = 1
         self._selected_squad = None
+        self._current_player_index = 0
 
         self._create_widgets(master)
 
@@ -183,7 +184,6 @@ class MainWindow(tk.Frame):
             else:
                 for i, player_sorted in enumerate(sorted_list):
                     if player.get_vp() >= player_sorted.get_vp() and player.get_vp() < sorted_list[i+1].get_vp():
-                        print(player.get_name(), ": ", player.get_vp(), " is between ", player_sorted.get_name(), ": ", player_sorted.get_vp(), " and ", sorted_list[i+1].get_name(), ": ", sorted_list[i+1].get_vp())
                         sorted_list.insert(i+1, player)
                         break
         print("New turn order:")
@@ -217,6 +217,8 @@ class MainWindow(tk.Frame):
         sorted_player_list = self.sort_players_by_vp()
         self.bottom_menu.refresh_widget_order(sorted_player_list)
 
+    def get_current_player(self):
+        return self._players[self._current_player_index]
 
 
 

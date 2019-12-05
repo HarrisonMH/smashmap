@@ -5,10 +5,12 @@
 
 class Squad:
 
-    def __init__(self, owner, fighter, location, create_squad_icon_callback, battle_popup_callback, set_selected_squad_callback):
+    def __init__(self, owner, fighter, location, create_squad_icon_callback, battle_popup_callback,
+                 set_selected_squad_callback, get_selected_squad_callback):
         self._create_squad_icon_callback = create_squad_icon_callback
         self._battle_popup_callback = battle_popup_callback
         self._set_selected_squad_callback = set_selected_squad_callback
+        self._get_selected_squad_callback = get_selected_squad_callback
         self._squad_icon = None
         self._squad_slot_id = None
         self._owner = owner
@@ -76,7 +78,7 @@ class Squad:
         hex_list = hex_map_ref.get_hex_list()
         new_loc_hex = hex_list[new_loc_id - 1]
         # print("Hex " + str(new_loc_hex.get_id()) + " occupied: " + str(new_loc_hex.check_if_squad_present()))
-        if self.check_hex_for_enemy(new_loc_hex) is True:
+        if self.check_hex_for_enemy(new_loc_hex) is True and new_loc_hex.get_structure() != "HQ":
             self._battle_popup_callback(self, new_loc_hex)
         elif new_loc_hex.check_open_space() is True:
             if new_loc_hex.get_structure() != "HQ" and new_loc_hex.get_owner != self._owner:
@@ -100,13 +102,18 @@ class Squad:
 
     def destroy_squad(self, parent_menu_str):
         print("Deleting squad in slot: ", self._squad_slot_id)
+        self.deselect_squad()
+        self.get_location().unhighlight_adjacent_hexes()
         self._squad_icon = None
         self._hex_location.remove_squad(self._squad_slot_id)
         self._owner.destroy_squad(self)
         self.refresh_active_menu(parent_menu_str)
 
     def _map_icon_click(self, event):
-        print("Map icon: ", self._fighter, " in slot ", self._squad_slot_id)
+        # print("Map icon: ", self._fighter, " in slot ", self._squad_slot_id)
+        current_selected_squad = self._get_selected_squad_callback()
+        if current_selected_squad is not None:
+            self._get_selected_squad_callback().get_location().unhighlight_adjacent_hexes()
         icon_state = self._squad_icon.cget("state")
         if icon_state != "disabled" and icon_state != "active":
             self._squad_icon.config(state="active")

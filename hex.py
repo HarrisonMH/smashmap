@@ -33,6 +33,7 @@ class Hex:
         self._hex_menu_callback(self)
         selected_squad = self._get_selected_squad_callback()
         if selected_squad is not None:
+            selected_squad.get_location().unhighlight_adjacent_hexes()
             selected_squad.deselect_squad()
 
         # Grey/black hex toggle code:
@@ -198,7 +199,6 @@ class Hex:
 
     def highlight_adjacent_hexes(self):
         for hex_id in self._adjacent_ids:
-            print("Dash value:", self._hex_map_ref.itemcget(hex_id, "dash"))
             self._hex_map_ref.itemconfig(hex_id, outline="blue", dash=10)
 
     def unhighlight_adjacent_hexes(self):

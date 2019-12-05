@@ -113,9 +113,11 @@ class Player:
         if self._resources - squad_cost < 0:
             print("Player resources insufficient to build squad")
             return
+        elif hex.check_open_space() is False:
+            print("Cannot build, hex is full")
         else:
+            self._squads.append(Squad(self, fighter, hex, self._create_squad_icon_callback, self._battle_popup_callback, self._master.set_selected_squad, self._master.get_selected_squad))
             self.adjust_resources(squad_cost * -1)
-            self._squads.append(Squad(self, fighter, hex, self._create_squad_icon_callback, self._battle_popup_callback, self._master.set_selected_squad))
             if hex.get_structure() == "Factory":
                 self._squads[-1].take_turn()
             if active_menu is not None:
