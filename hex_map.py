@@ -7,6 +7,7 @@
 import tkinter as tk
 import math
 from hex import Hex
+from squad_context_menu import SquadContextMenu
 
 COS_30 = math.cos(math.radians(30))
 SIN_30 = math.sin(math.radians(30))
@@ -295,3 +296,12 @@ class HexMap(tk.Frame):
 
     def get_hex_list(self):
         return self._hexes
+
+    def _squad_context_menu_callback(self, squad):
+        canvas_item_id = self.hex_grid.create_window(0, 200, anchor="nw")
+        self._squad_context_menu = SquadContextMenu(self, squad, canvas_item_id)
+        self.hex_grid.itemconfig(canvas_item_id, window=self._squad_context_menu)
+        self.hex_grid.tag_bind(canvas_item_id, "<Leave>", self._destroy_squad_context_menu)
+
+    def _destroy_squad_context_menu(self, event):
+        pass

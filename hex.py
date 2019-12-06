@@ -196,6 +196,8 @@ class Hex:
                 self._get_selected_squad_callback().move_squad(self._id, self._parent, "hex")
             else:
                 print("Invalid move")
+        else:
+            print("No squad selected")
 
     def highlight_adjacent_hexes(self):
         for hex_id in self._adjacent_ids:

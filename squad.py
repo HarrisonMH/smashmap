@@ -73,6 +73,7 @@ class Squad:
     def set_squad_icon(self, icon_reference):
         self._squad_icon = icon_reference
         self._squad_icon.bind("<Button-1>", self._map_icon_click)
+        self._squad_icon.bind("<Button-3>", self._map_icon_right_click)
 
     def move_squad(self, new_loc_id, hex_map_ref, parent_menu_str):
         # new_loc_id = int(event.widget.cget("text"))
@@ -114,7 +115,7 @@ class Squad:
         # print("Map icon: ", self._fighter, " in slot ", self._squad_slot_id)
         if self._get_current_player_callback() == self._owner:
             current_selected_squad = self._get_selected_squad_callback()
-            if current_selected_squad is not None:
+            if current_selected_squad is not None and current_selected_squad != self:
                 self._get_selected_squad_callback().get_location().unhighlight_adjacent_hexes()
             icon_state = self._squad_icon.cget("state")
             if icon_state != "disabled" and icon_state != "active":
@@ -123,6 +124,13 @@ class Squad:
                 self._hex_location.highlight_adjacent_hexes()
         else:
             print("Cannot select enemy squad")
+
+    def _map_icon_right_click(self, event):
+        if self._get_current_player_callback() == self._owner:
+            current_selected_squad = self._get_selected_squad_callback()
+            if current_selected_squad == self:
+                print("Right click on selected squad!")
+                self._hex_location._parent._squad_context_menu_callback(self)
 
 
     def deselect_squad(self):
@@ -146,3 +154,14 @@ class Squad:
                 if squad.get_owner() != self._owner:
                     return True
         return False
+
+    def colonize(self):
+        print("Owner of hex", self._hex_location.get_id(), ": ", self._hex_location.get_owner())
+        if self._hex_location.get_owner() is None:
+            self._hex_location.change_owner(self._owner.get_name(), self._owner.get_colour())
+            self.take_turn()
+            self._owner.adjust_territory_size(1)
+            self._owner.adjust_income(self._hex_location.get_value())
+            self._owner.adjust_vp_income(self._hex_location.get_vp_value())
+            # FIXME: This needs to be adjusted with the right panel menu overhaul
+            self.refresh_active_menu("hex")

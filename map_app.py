@@ -228,7 +228,7 @@ class MainWindow(tk.Frame):
         self.bottom_menu.refresh_widget_order(self._players)
 
     def get_current_player(self):
-        print("Current player index: ", self._current_player_index)
+        # print("Current player index: ", self._current_player_index)
         return self._players[self._current_player_index]
 
 
