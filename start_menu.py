@@ -8,14 +8,16 @@ COLOUR_ENTRY = 4
 FIGHTER_1_ENTRY = 6
 FIGHTER_2_ENTRY = 8
 
-class StartMenu(tk.Frame):
 
+class StartMenu(tk.Frame):
 
     def __init__(self, master, fighter_list, start_game_callback):
         tk.Frame.__init__(self, master)
         self._master = master
         self._fighter_list = fighter_list
         self._start_game_callback = start_game_callback
+        self._valid_colour_list = ["hotpink", "mediumvioletred", "red", "darkorange", "goldenrod", "green", "royalblue",
+                                   "darkcyan", "purple", "indigo", "brown", "wheat"]
         self._players = []
 
         self._create_widgets()
@@ -23,52 +25,65 @@ class StartMenu(tk.Frame):
 
     def _create_widgets(self):
         self._header = tk.Label(self, text="Enter Player Data", font=(None, 16))
-        self._header.grid(row=0, column=0, columnspan=4)
+        self._header.grid(row=0, column=0, columnspan=4, sticky="w")
         self._create_player_fields()
 
 
     def _create_player_fields(self):
         player_num = 1
+        current_row = 1
         for player in range(6):
             # Creates widgets for each player.
-            player_var = tk.StringVar()
-            player_var.set("player" + str(player_num))
+            # player_var = tk.StringVar()
+            # player_var.set("player" + str(player_num))
 
             self._players.append([])
             self._players[player].append(tk.Label(self, text="Player " + str(player_num) + ":", font=(None, 12)))
+            self._players[player][-1].grid(row=current_row, column=0, columnspan=2, padx=10, pady=5, sticky="w")
+            current_row += 1
             self._players[player].append(tk.Label(self, text="Name: "))
+            self._players[player][-1].grid(row=current_row, column=0, padx=10, pady=5, sticky="w")
             self._players[player].append(tk.Entry(self))
-            #FIXME: Change colour input to Combobox
+            self._players[player][-1].grid(row=current_row, column=1, padx=10, pady=5, sticky="w")
+            # FIXME: Create custom colour-picker
             self._players[player].append(tk.Label(self, text="Colour: "))
+            self._players[player][-1].grid(row=current_row, column=2, padx=10, pady=5, sticky="w")
             self._players[player].append(tk.Entry(self))
+            self._players[player][-1].grid(row=current_row, column=3, padx=10, pady=5, sticky="w")
+            current_row += 1
             self._players[player].append(tk.Label(self, text="Squad 1: "))
+            self._players[player][-1].grid(row=current_row, column=0, padx=10, pady=5, sticky="w")
             self._players[player].append(ttk.Combobox(self, values=self._fighter_list))
+            self._players[player][-1].grid(row=current_row, column=1, padx=10, pady=5, sticky="w")
             self._players[player].append(tk.Label(self, text="Squad 2: "))
+            self._players[player][-1].grid(row=current_row, column=2, padx=10, pady=5, sticky="w")
             self._players[player].append(ttk.Combobox(self, values=self._fighter_list))
+            self._players[player][-1].grid(row=current_row, column=3, padx=10, pady=5, sticky="w")
+            current_row += 1
 
             player_num += 1
 
-        current_row = 2
-        for player_data in self._players:
-            current_col = 0
-
-            player_data[0].grid(row=current_row, column=current_col, pady=(8, 1))
-            current_row += 1
-
-            for i in range(1, 5):
-                player_data[i].grid(row=current_row, column=current_col)
-                current_col +=1
-
-            current_row += 1
-            current_col = 0
-
-            for i in range(5, 9):
-                player_data[i].grid(row=current_row, column=current_col, pady=(8, 1))
-                current_col += 1
-                if i == 8:
-                    player_data[i].grid(padx=(1, 5))
-
-            current_row += 1
+        # current_row = 2
+        # for player_data in self._players:
+        #     current_col = 0
+        #
+        #     player_data[0].grid(row=current_row, column=current_col, sticky="W", pady=(8, 1))
+        #     current_row += 1
+        #
+        #     for i in range(1, 5):
+        #         player_data[i].grid(row=current_row, column=current_col, sticky="W", padx=10)
+        #         current_col +=1
+        #
+        #     current_row += 1
+        #     current_col = 0
+        #
+        #     for i in range(5, 9):
+        #         player_data[i].grid(row=current_row, column=current_col, sticky="W", pady=(8, 1))
+        #         current_col += 1
+        #         if i == 8:
+        #             player_data[i].grid(padx=(1, 5))
+        #
+        #     current_row += 1
 
         self._start_button = tk.Button(self, text="Start!", font=(None, 20),  command=self.start_game)
         self._start_button.grid(row=current_row, column=0, columnspan=4, pady=20)
@@ -105,9 +120,9 @@ class StartMenu(tk.Frame):
                                    'fighter2': 'Villager'},
                             'p4': {'playernum': 4, 'name': 'Kit', 'colour': 'darkorange', 'fighter1': 'Ness',
                                    'fighter2': 'Zelda'},
-                            'p5': {'playernum': 5, 'name': 'Alvin', 'colour': 'royalblue', 'fighter1': 'Cloud',
+                            'p5': {'playernum': 5, 'name': 'Alvin', 'colour': 'darkcyan', 'fighter1': 'Cloud',
                                    'fighter2': 'Ryu'},
-                            'p6': {'playernum': 6, 'name': 'Eric', 'colour': 'purple', 'fighter1': 'Inkling',
+                            'p6': {'playernum': 6, 'name': 'Eric', 'colour': 'indigo', 'fighter1': 'Inkling',
                                    'fighter2': 'Pikachu'}}
         self._start_game_callback(test_player_data)
 

@@ -59,8 +59,8 @@ class Squad:
     def set_location(self, new_loc):
         self._hex_location = new_loc
 
-    def get_squad_id(self):
-        return self._squad_icon
+    def get_squad_slot_id(self):
+        return self._squad_slot_id
 
     def set_squad_slot_id(self, new_id):
         self._squad_slot_id = new_id
@@ -158,7 +158,7 @@ class Squad:
     def colonize(self):
         print("Owner of hex", self._hex_location.get_id(), ": ", self._hex_location.get_owner())
         if self._hex_location.get_owner() is None:
-            self._hex_location.change_owner(self._owner.get_name(), self._owner.get_colour())
+            self._hex_location.change_owner(self._owner, self._owner.get_colour())
             self.take_turn()
             self._owner.adjust_territory_size(1)
             self._owner.adjust_income(self._hex_location.get_value())

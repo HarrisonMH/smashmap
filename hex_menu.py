@@ -20,6 +20,7 @@ class HexMenu(tk.Frame):
         self._squad_icon_list = []
 
         self._hex_owner = self._hex.get_owner()
+        print(self._hex.get_owner())
         if self._hex_owner is not None:
             self._player_str = "Player " + str(self._hex_owner.get_player_number())
             self._player_colour = self._hex_owner.get_colour()

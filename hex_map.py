@@ -298,10 +298,11 @@ class HexMap(tk.Frame):
         return self._hexes
 
     def _squad_context_menu_callback(self, squad):
-        canvas_item_id = self.hex_grid.create_window(0, 200, anchor="nw")
-        self._squad_context_menu = SquadContextMenu(self, squad, canvas_item_id)
+        squad_coords = self.hex_grid.coords(squad.get_squad_slot_id())
+        canvas_item_id = self.hex_grid.create_window(squad_coords[0] + 15, squad_coords[1], anchor="w")
+        self._squad_context_menu = SquadContextMenu(self, squad, canvas_item_id, self._destroy_squad_context_menu_callback)
         self.hex_grid.itemconfig(canvas_item_id, window=self._squad_context_menu)
-        self.hex_grid.tag_bind(canvas_item_id, "<Leave>", self._destroy_squad_context_menu)
+        self.hex_grid.tag_bind(canvas_item_id, "<Leave>", self._squad_context_menu.mouse_exit)
 
-    def _destroy_squad_context_menu(self, event):
-        pass
+    def _destroy_squad_context_menu_callback(self, canvas_item_id):
+        self.hex_grid.delete(canvas_item_id)
