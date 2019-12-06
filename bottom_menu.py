@@ -10,7 +10,7 @@ from player_status_bar import PlayerStatusBar
 class BottomMenu(tk.Frame):
 
     def __init__(self, master, player_list, player_menu_callback, end_turn_callback, icon_image_dict):
-        super().__init__(master)
+        super().__init__(master, bg="white")
         self._master = master
         self._player_menu_callback = player_menu_callback
         self._end_turn_callback = end_turn_callback

@@ -6,11 +6,12 @@
 class Squad:
 
     def __init__(self, owner, fighter, location, create_squad_icon_callback, battle_popup_callback,
-                 set_selected_squad_callback, get_selected_squad_callback):
+                 set_selected_squad_callback, get_selected_squad_callback, get_current_player_callback):
         self._create_squad_icon_callback = create_squad_icon_callback
         self._battle_popup_callback = battle_popup_callback
         self._set_selected_squad_callback = set_selected_squad_callback
         self._get_selected_squad_callback = get_selected_squad_callback
+        self._get_current_player_callback = get_current_player_callback
         self._squad_icon = None
         self._squad_slot_id = None
         self._owner = owner
@@ -111,14 +112,17 @@ class Squad:
 
     def _map_icon_click(self, event):
         # print("Map icon: ", self._fighter, " in slot ", self._squad_slot_id)
-        current_selected_squad = self._get_selected_squad_callback()
-        if current_selected_squad is not None:
-            self._get_selected_squad_callback().get_location().unhighlight_adjacent_hexes()
-        icon_state = self._squad_icon.cget("state")
-        if icon_state != "disabled" and icon_state != "active":
-            self._squad_icon.config(state="active")
-            self._set_selected_squad_callback(self)
-            self._hex_location.highlight_adjacent_hexes()
+        if self._get_current_player_callback() == self._owner:
+            current_selected_squad = self._get_selected_squad_callback()
+            if current_selected_squad is not None:
+                self._get_selected_squad_callback().get_location().unhighlight_adjacent_hexes()
+            icon_state = self._squad_icon.cget("state")
+            if icon_state != "disabled" and icon_state != "active":
+                self._squad_icon.config(state="active")
+                self._set_selected_squad_callback(self)
+                self._hex_location.highlight_adjacent_hexes()
+        else:
+            print("Cannot select enemy squad")
 
 
     def deselect_squad(self):

@@ -27,7 +27,7 @@ MAP_ICON_PATH = "./images/map_icons"
 class MainWindow(tk.Frame):
 
     def __init__(self, master=None):
-        super().__init__(master)
+        super().__init__(master, bg="white")
         self._master = master
 
         self._fighter_list = self._generate_fighter_list()
@@ -43,8 +43,8 @@ class MainWindow(tk.Frame):
         self._create_widgets(master)
 
     def _create_widgets(self, master):
-        self._hex_map = HexMap(master, self, 50, self._hex_menu_callback, self._end_turn_callback)
-        self._hex_map.grid(column=0, row=0, columnspan=6, rowspan=20)
+        self._hex_map = HexMap(master, self, 50, self._hex_menu_callback, self._end_turn_callback, self._next_player_callback)
+        # self._hex_map.grid(column=0, row=0, columnspan=6, rowspan=20)
         self.side_menu = StartMenu(master, self._fighter_list, self._start_game_callback)
         self.side_menu.grid(column=11, row=0)
 
@@ -57,8 +57,10 @@ class MainWindow(tk.Frame):
 
 
     def _start_game_callback(self, player_data):
+        self._hex_map.grid(column=0, row=0, columnspan=6, rowspan=20)
         self._initialize_players(player_data)
         self._hex_map.initialize_start_positions(player_data, self._players)
+        self._hex_map.adjust_current_player_display(self._players[0])
         self._in_progress = True
         self.side_menu.grid_forget()
 
@@ -145,10 +147,8 @@ class MainWindow(tk.Frame):
 
     def _initialize_players(self, player_data):
         for player in player_data:
-            self._players.append(Player(self, player_data[player], self._hex_map.create_squad_icon_callback, self._player_menu_callback, self._hex_menu_callback, self._battle_popup_callback))
-
-    def _select_defending_squad(self):
-        pass
+            self._players.append(Player(self, player_data[player], self._hex_map.create_squad_icon_callback,
+                                        self._player_menu_callback, self._hex_menu_callback, self._battle_popup_callback, self.get_current_player))
 
     def get_turn_number(self):
         return self._turn_number
@@ -207,6 +207,14 @@ class MainWindow(tk.Frame):
         else:
             self.end_turn()
 
+    def _next_player_callback(self):
+        if self._current_player_index < len(self._players) - 1:
+            self._current_player_index += 1
+        else:
+            self._current_player_index = 0
+            self.end_turn()
+        self._hex_map.adjust_current_player_display(self.get_current_player())
+
     def end_turn(self):
         self._turn_number += 1
         self._hex_map.adjust_turn_display(self._turn_number)
@@ -214,10 +222,13 @@ class MainWindow(tk.Frame):
             player.collect_income()
             player.collect_vp()
             player.refresh_player_squads()
-        sorted_player_list = self.sort_players_by_vp()
-        self.bottom_menu.refresh_widget_order(sorted_player_list)
+        # sorted_player_list = self.sort_players_by_vp()
+        # self.bottom_menu.refresh_widget_order(sorted_player_list)
+        self._players = self.sort_players_by_vp()
+        self.bottom_menu.refresh_widget_order(self._players)
 
     def get_current_player(self):
+        print("Current player index: ", self._current_player_index)
         return self._players[self._current_player_index]
 
 

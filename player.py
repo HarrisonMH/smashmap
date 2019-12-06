@@ -9,12 +9,14 @@ from squad import Squad
 
 class Player:
 
-    def __init__(self, master, player_data, create_squad_icon_callback, player_menu_callback, hex_menu_callback, battle_popup_callback):
+    def __init__(self, master, player_data, create_squad_icon_callback, player_menu_callback, hex_menu_callback,
+                 battle_popup_callback, get_current_player_callback):
         self._master = master
         self._create_squad_icon_callback = create_squad_icon_callback
         self._player_menu_callback = player_menu_callback
         self._hex_menu_callback = hex_menu_callback
         self._battle_popup_callback = battle_popup_callback
+        self._get_current_player_callback = get_current_player_callback
         self._player_number = player_data["playernum"]
         self._name = player_data["name"]
         self._colour = player_data["colour"]
@@ -116,7 +118,9 @@ class Player:
         elif hex.check_open_space() is False:
             print("Cannot build, hex is full")
         else:
-            self._squads.append(Squad(self, fighter, hex, self._create_squad_icon_callback, self._battle_popup_callback, self._master.set_selected_squad, self._master.get_selected_squad))
+            self._squads.append(Squad(self, fighter, hex, self._create_squad_icon_callback, self._battle_popup_callback,
+                                      self._master.set_selected_squad, self._master.get_selected_squad,
+                                      self._get_current_player_callback))
             self.adjust_resources(squad_cost * -1)
             if hex.get_structure() == "Factory":
                 self._squads[-1].take_turn()

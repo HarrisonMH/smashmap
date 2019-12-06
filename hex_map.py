@@ -15,7 +15,7 @@ TEST_WIDTH_50 = COS_30 * 100
 
 class HexMap(tk.Frame):
 
-    def __init__(self, master, parent, size, hex_menu_callback, end_turn_callback):
+    def __init__(self, master, parent, size, hex_menu_callback, end_turn_callback, next_player_callback):
         super().__init__(master)
         self._master = master
         self._parent = parent
@@ -23,6 +23,7 @@ class HexMap(tk.Frame):
         self.hex_grid.grid(column=0, row=1)
         self._hex_menu_callback = hex_menu_callback
         self._end_turn_callback = end_turn_callback
+        self._next_player_callback = next_player_callback
 
         self._hex_coord_dict = {}
         self._hexes = []
@@ -32,6 +33,7 @@ class HexMap(tk.Frame):
         self._define_squad_slot_coords()
         self._create_structure_slots()
         self._label_grid()
+        self._map_menu = tk.Frame()
         self._create_master_menu()
 
 
@@ -71,17 +73,30 @@ class HexMap(tk.Frame):
             curr_y = curr_y + (COS_30 * 50 * 2) - 7
 
     def _create_master_menu(self):
-        self._map_menu = tk.Frame()
-        self._turn_num_label = tk.Label(self._map_menu, text="Turn " + str(self._parent.get_turn_number()), font=(None, 12, "bold"))
-        self._turn_num_label.pack()
+        current_row = 0
+        self._turn_num_label = tk.Label(self._map_menu, text="Turn " + str(self._parent.get_turn_number()),
+                                        font=(None, 12, "bold"))
+        self._turn_num_label.grid(row=current_row, column=0, columnspan=2)
+        current_row += 1
+        self._current_player_label_1 = tk.Label(self._map_menu, text="Current Player:", font=(None, 10, "bold"))
+        self._current_player_label_1.grid(row=current_row, column=0, sticky="W")
+        self._current_player_label_2 = tk.Label(self._map_menu, fg="white", font=(None, 10, "bold"))
+        self._current_player_label_2.grid(row=current_row, column=1, sticky="W")
+        current_row += 1
+        self._next_player_btn = tk.Button(self._map_menu, text="Next Player", command=self._next_player_callback)
+        self._next_player_btn.grid(row=current_row, column=0, columnspan=2, sticky="W"+"E")
+        current_row += 1
         self._end_turn_btn = tk.Button(self._map_menu, text="End Turn", command=self._end_turn_callback)
-        self._end_turn_btn.pack()
+        self._end_turn_btn.grid(row=current_row, column=0, columnspan=2, sticky="W" + "E")
 
-        self._grid_menu_window = self.hex_grid.create_window(50, 50, window=self._map_menu)
+        self._grid_menu_window = self.hex_grid.create_window(0, 0, anchor="nw", window=self._map_menu)
+
+    def adjust_current_player_display(self, value):
+        current_player = value
+        self._current_player_label_2.config(text=current_player.get_name(), bg=current_player.get_colour())
 
     def adjust_turn_display(self, value):
         self._turn_num_label.config(text="Turn " + str(value))
-
 
     def _create_hex(self, start_x, start_y, size, row, column):
         hex_points = self._calculate_hex_points(start_x, start_y, size)
