@@ -26,11 +26,14 @@ class SquadContextMenu(tk.Frame):
 
     def _context_colonize(self):
         self._squad.colonize()
-        self.destroy()
+        self._destroy_squad_context_menu_callback(self._canvas_item_id)
+        # self.destroy()
 
     def _context_pass(self):
         self._squad.take_turn()
-        self.destroy()
+        self._destroy_squad_context_menu_callback(self._canvas_item_id)
+        # self.destroy()
 
     def mouse_exit(self, event):
+        print("Mouse left context")
         self._destroy_squad_context_menu_callback(self._canvas_item_id)
