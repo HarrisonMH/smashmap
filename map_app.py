@@ -235,7 +235,7 @@ class MainWindow(tk.Frame):
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title("Smash Map Ladder v0.1")
+    root.title("Smash Map Ladder v0.2")
     root.geometry("+100+50")
     root.resizable(False, False)
     app = MainWindow(root)

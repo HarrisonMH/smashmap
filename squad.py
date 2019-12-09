@@ -113,15 +113,20 @@ class Squad:
 
     def _map_icon_click(self, event):
         # print("Map icon: ", self._fighter, " in slot ", self._squad_slot_id)
+        # FIXME: Add deselection logic when clicking on a selected squad
         if self._get_current_player_callback() == self._owner:
             current_selected_squad = self._get_selected_squad_callback()
-            if current_selected_squad is not None and current_selected_squad != self:
-                self._get_selected_squad_callback().get_location().unhighlight_adjacent_hexes()
-            icon_state = self._squad_icon.cget("state")
-            if icon_state != "disabled" and icon_state != "active":
-                self._squad_icon.config(state="active")
-                self._set_selected_squad_callback(self)
-                self._hex_location.highlight_adjacent_hexes()
+            if current_selected_squad == self:
+                self.deselect_squad()
+                self._hex_location.unhighlight_adjacent_hexes()
+            else:
+                if current_selected_squad is not None and current_selected_squad != self:
+                    self._get_selected_squad_callback().get_location().unhighlight_adjacent_hexes()
+                icon_state = self._squad_icon.cget("state")
+                if icon_state != "disabled" and icon_state != "active":
+                    self._squad_icon.config(state="active")
+                    self._set_selected_squad_callback(self)
+                    self._hex_location.highlight_adjacent_hexes()
         else:
             print("Cannot select enemy squad")
 
@@ -130,7 +135,7 @@ class Squad:
             current_selected_squad = self._get_selected_squad_callback()
             if current_selected_squad == self:
                 print("Right click on selected squad!")
-                self._hex_location._parent._squad_context_menu_callback(self)
+                self._hex_location._parent.squad_context_menu(self)
 
 
     def deselect_squad(self):

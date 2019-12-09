@@ -81,10 +81,10 @@ class HexMap(tk.Frame):
         current_row += 1
         self._current_player_label_1 = tk.Label(self._map_menu, text="Current Player:", font=(None, 10, "bold"))
         self._current_player_label_1.grid(row=current_row, column=0, sticky="W")
-        self._current_player_label_2 = tk.Label(self._map_menu, fg="white", font=(None, 10, "bold"))
+        self._current_player_label_2 = tk.Label(self._map_menu, fg="white", width=10, font=(None, 10, "bold"))
         self._current_player_label_2.grid(row=current_row, column=1, sticky="W")
         current_row += 1
-        self._next_player_btn = tk.Button(self._map_menu, text="Next Player", command=self._next_player_callback)
+        self._next_player_btn = tk.Button(self._map_menu, text="Next Player", font=(None, 9, "bold"), command=self._next_player_callback)
         self._next_player_btn.grid(row=current_row, column=0, columnspan=2, sticky="W"+"E")
         current_row += 1
         self._end_turn_btn = tk.Button(self._map_menu, text="End Turn", command=self._end_turn_callback)
@@ -297,7 +297,7 @@ class HexMap(tk.Frame):
     def get_hex_list(self):
         return self._hexes
 
-    def _squad_context_menu_callback(self, squad):
+    def squad_context_menu(self, squad):
         squad_coords = self.hex_grid.coords(squad.get_squad_slot_id())
         canvas_item_id = self.hex_grid.create_window(squad_coords[0] + 15, squad_coords[1], anchor="w")
         self._squad_context_menu = SquadContextMenu(self, squad, canvas_item_id, self._destroy_squad_context_menu_callback)
