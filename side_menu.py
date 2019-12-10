@@ -3,8 +3,9 @@
 # Defines layout, attributes and methods for unified side menu
 
 import tkinter as tk
+import tkinter.ttk as ttk
 
-# FIXME: Add play log to bottom of menu
+# FIXME: Add play log to bottom of menu, implement hiding logic for non-applicable elements
 class SideMenu(tk.Frame):
     def __init__(self, master, hex, hex_map, fighter_image_dict, fighter_list, icon_image_dict, **kwargs):
         super().__init__(master, kwargs)
@@ -75,6 +76,26 @@ class SideMenu(tk.Frame):
             self._structure_effect_label = tk.Label(self, textvariable=self._structure_effect_var, font=(None, 12))
             self._structure_effect_label.grid(row=current_row, column=0, columnspan=4)
         current_row += 1
+
+        # FIXME: Refactor to integrate with menu functions
+        if structure == "HQ" or structure == "Factory":
+            if self._hex_owner is None:
+                build_state = "disabled"
+                picker_state = "disabled"
+            else:
+                build_state = "normal"
+                picker_state = "readonly"
+            self._build_squad_label = tk.Label(self, text="New squad: ", state=build_state)
+            self._build_squad_label.grid(row=current_row, column=0, columnspan=1, pady=10)
+            self._build_squad_picker = ttk.Combobox(self, values=self._fighter_list, state=picker_state)
+            self._build_squad_picker.grid(row=current_row, column=1, columnspan=3, pady=10, padx=10)
+            current_row += 1
+            self._build_squad_btn = tk.Button(self, text="Build", font=(None, 10, "bold"), state=build_state,
+                                              command=self._build_new_squad)
+            self._build_squad_btn.grid(row=current_row, column=0, columnspan=4, pady=10, padx=10, sticky="w"+"e")
+            current_row += 1
+        
+        current_row += 1
         self._squads_header_label = tk.Label(self, text="Squads", font=(None, 16))
         self._squads_header_label.grid(row=current_row, column=0, columnspan=4, pady=(10, 0))
         current_row += 1
@@ -127,6 +148,10 @@ class SideMenu(tk.Frame):
             self._structure_image = self._icon_image_dict[structure.lower()]["menu"]
             self._structure_str_var.set("Structure: " + structure)
             self._structure_effect_var.set(self.get_structure_effect_str(structure))
+        else:
+            self._structure_image = ""
+            self._structure_str_var.set("")
+            self._structure_effect_var.set("")
         self._squads = hex.get_squads(False)
         if self._squads[0] is not None:
             self._sq1_fighter_var.set(self._squads[0].get_fighter())
@@ -163,4 +188,10 @@ class SideMenu(tk.Frame):
     def update_all(self, hex):
         self.set_new_values(hex)
         self.update_non_var_values()
+
+    # FIXME: Add cost multiplication logic for building duplicate squads
+    def _build_new_squad(self):
+        fighter = self._build_squad_picker.get()
+        if fighter != "":
+            self._hex.get_owner().build_squad(fighter, self._hex)
 
