@@ -220,9 +220,15 @@ class HexMap(tk.Frame):
         if col == 1 or col == col_max - 1:
             return 2
         if col == 2 or col == col_max - 2:
-            return 3
+            if row == 1 or row == 7:
+                return 2
+            else:
+                return 3
         if col == 3 or col == col_max - 3:
-            return 4
+            if col == 3 and col == col_max - 3:
+                return 3
+            else:
+                return 4
         if col == 4 and col == col_max - 4:
             return 5
 
@@ -271,7 +277,7 @@ class HexMap(tk.Frame):
             hex.set_structure_id(structure_id)
             hex.set_value(175)
         elif structure == "Refinery":
-            structure_id = self.hex_grid.create_text(hex.get_structure_coords(), text="@", font=(None, 10))
+            structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._icon_image_dict["refinery"]["map"])
             hex.set_structure_id(structure_id)
             hex.set_value(200)
         elif structure == "Factory":

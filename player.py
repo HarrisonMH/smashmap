@@ -9,11 +9,10 @@ from squad import Squad
 
 class Player:
 
-    def __init__(self, master, player_data, create_squad_icon_callback, player_menu_callback, hex_menu_callback,
+    def __init__(self, master, player_data, create_squad_icon_callback, hex_menu_callback,
                  battle_popup_callback, get_current_player_callback):
         self._master = master
         self._create_squad_icon_callback = create_squad_icon_callback
-        self._player_menu_callback = player_menu_callback
         self._hex_menu_callback = hex_menu_callback
         self._battle_popup_callback = battle_popup_callback
         self._get_current_player_callback = get_current_player_callback

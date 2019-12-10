@@ -77,6 +77,8 @@ class HexMenu(tk.Frame):
                 structure_str = "Refinery (+175 Res, +5 VP)"
             elif structure == "HQ":
                 structure_str = "HQ (+175 Res, Build)"
+            else:
+                structure_str = ""
             self._structure_header = tk.Label(self, text="Structure: " + structure_str, font=(None, 14))
             self._structure_header.grid(row=self._current_row, column=0, columnspan=2, pady=(1, 10))
             self._current_row += 1

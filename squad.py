@@ -150,7 +150,7 @@ class Squad:
             self._owner.show_player_menu()
         elif active_menu_str == "hex":
             print("Refreshing hex menu")
-            self._hex_location.show_hex_menu()
+            self._hex_location.update_side_menu()
 
     def check_hex_for_enemy(self, hex):
         if hex.check_if_squad_present() is True:

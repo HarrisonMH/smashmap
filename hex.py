@@ -5,12 +5,12 @@
 
 class Hex:
 
-    def __init__(self, hex_map, master, parent, id, hex_menu_callback, row, column, adjacent_coords, ring_number,
+    def __init__(self, hex_map, master, parent, id, side_menu_callback, row, column, adjacent_coords, ring_number,
                  get_selected_squad_callback):
         self._master = master
         self._parent = parent
         self._hex_map_ref = hex_map
-        self._hex_menu_callback = hex_menu_callback
+        self._side_menu_callback = side_menu_callback
         self._get_selected_squad_callback = get_selected_squad_callback
         self._owner = None
         self._id = id
@@ -23,14 +23,14 @@ class Hex:
         self._squad_slot_ids = [None, None]
         self._squad_slot_coords = None
         self._res_value = 25
-        self._structure = "None"
+        self._structure = None
         self._squad_1 = None
         self._squad_2 = None
 
-        hex_map.tag_bind(self._id, "<Button-1>", self.show_hex_menu)
+        hex_map.tag_bind(self._id, "<Button-1>", self.update_side_menu)
 
-    def show_hex_menu(self, event=None):
-        self._hex_menu_callback(self)
+    def update_side_menu(self, event=None):
+        self._side_menu_callback(self)
         selected_squad = self._get_selected_squad_callback()
         if selected_squad is not None:
             selected_squad.get_location().unhighlight_adjacent_hexes()
@@ -131,12 +131,15 @@ class Hex:
     def get_squad_slots(self):
         return self._squad_slot_ids
 
-    def get_squads(self):
+    def get_squads(self, exclude_nulls=True):
         squad_list = []
-        if self._squad_1 is not None:
-            squad_list.append(self._squad_1)
-        if self._squad_2 is not None:
-            squad_list.append(self._squad_2)
+        if exclude_nulls is True:
+            if self._squad_1 is not None:
+                squad_list.append(self._squad_1)
+            if self._squad_2 is not None:
+                squad_list.append(self._squad_2)
+        elif exclude_nulls is False:
+            squad_list.extend([self._squad_1, self._squad_2])
         return squad_list
 
 

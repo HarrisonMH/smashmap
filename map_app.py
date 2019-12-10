@@ -16,6 +16,7 @@ from player import Player
 from player_menu import PlayerMenu
 from battle_popup import BattlePopup
 from end_turn_popup import EndTurnPopup
+from side_menu import SideMenu
 from PIL import Image, ImageTk, ImageOps
 
 COS_30 = math.cos(math.radians(30))
@@ -43,17 +44,23 @@ class MainWindow(tk.Frame):
         self._create_widgets(master)
 
     def _create_widgets(self, master):
-        self._hex_map = HexMap(master, self, 50, self._hex_menu_callback, self._end_turn_callback, self._next_player_callback)
-        # self._hex_map.grid(column=0, row=0, columnspan=6, rowspan=20)
-        self.side_menu = StartMenu(master, self._fighter_list, self._start_game_callback)
-        self.side_menu.grid(column=11, row=0)
+        self._hex_map = HexMap(master, self, 50, self._side_menu_callback, self._end_turn_callback, self._next_player_callback)
+        self._start_menu = StartMenu(master, self._fighter_list, self._start_game_callback)
+        self._start_menu.grid(column=0, row=0)
 
-    def _hex_menu_callback(self, hex):
+    # def _hex_menu_callback(self, hex):
+    #     print("Hex menu callback, hex", hex.get_id())
+    #     if self._in_progress:
+    #         if self._side_menu is not None:
+    #             self._side_menu.grid_forget()
+    #         self._side_menu = HexMenu(hex, self._hex_map, self._fighter_image_dict, self._fighter_list)
+    #         self._side_menu.grid(column=11, row=0)
+    #         self._active_menu = "hex"
+
+    def _side_menu_callback(self, hex):
         if self._in_progress:
-            self.side_menu.grid_forget()
-            self.side_menu = HexMenu(hex, self._hex_map, self._fighter_image_dict, self._fighter_list)
-            self.side_menu.grid(column=11, row=0)
-            self._active_menu = "hex"
+            if self._side_menu is not None:
+                self._side_menu.update_all(hex)
 
 
     def _start_game_callback(self, player_data):
@@ -62,23 +69,21 @@ class MainWindow(tk.Frame):
         self._hex_map.initialize_start_positions(player_data, self._players)
         self._hex_map.adjust_current_player_display(self._players[0])
         self._in_progress = True
-        self.side_menu.grid_forget()
-
-        # self._hex_map.grid(column=0, row=0, columnspan=10, rowspan=20)
-
-        # self.bottom_menu = BottomMenu(self._master, player_data, self._player_menu_callback)
-        self.bottom_menu = BottomMenu(self._master, self._players, self._player_menu_callback, self._end_turn_callback, self._icon_image_dict)
+        self._start_menu.destroy()
+        self._side_menu = SideMenu(self._master, self._players[0].get_hq(), self._hex_map, self._fighter_image_dict, self._fighter_list, self._icon_image_dict)
+        self._side_menu.grid(column=7, row=0)
+        self.bottom_menu = BottomMenu(self._master, self._players, self._end_turn_callback, self._icon_image_dict)
         self.bottom_menu.grid(column=0, row=21, columnspan=6, pady=5)
 
 
-    def _player_menu_callback(self, player):
-        # player_num = int(event.widget.cget("text")[7])
-        print("Opening Player " + str(player.get_player_number()) + " menu")
-
-        self.side_menu.grid_forget()
-        self.side_menu = PlayerMenu(self._master, player, self._fighter_image_dict, self._hex_map)
-        self.side_menu.grid(column=11, row=0)
-        self._active_menu = "player"
+    # def _player_menu_callback(self, player):
+    #     # player_num = int(event.widget.cget("text")[7])
+    #     print("Opening Player " + str(player.get_player_number()) + " menu")
+    #
+    #     self._side_menu.grid_forget()
+    #     self._side_menu = PlayerMenu(self._master, player, self._fighter_image_dict, self._hex_map)
+    #     self._side_menu.grid(column=11, row=0)
+    #     self._active_menu = "player"
 
 
     def _battle_popup_callback(self, atk_squad, target_hex):
@@ -148,7 +153,7 @@ class MainWindow(tk.Frame):
     def _initialize_players(self, player_data):
         for player in player_data:
             self._players.append(Player(self, player_data[player], self._hex_map.create_squad_icon_callback,
-                                        self._player_menu_callback, self._hex_menu_callback, self._battle_popup_callback, self.get_current_player))
+                                        self._side_menu_callback, self._battle_popup_callback, self.get_current_player))
 
     def get_turn_number(self):
         return self._turn_number
@@ -208,6 +213,7 @@ class MainWindow(tk.Frame):
             self.end_turn()
 
     def _next_player_callback(self):
+        # FIXME: Add check for remaining actions before allowing pass to next player
         if self._current_player_index < len(self._players) - 1:
             self._current_player_index += 1
         else:
