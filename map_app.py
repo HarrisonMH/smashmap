@@ -70,7 +70,7 @@ class MainWindow(tk.Frame):
         self._hex_map.adjust_current_player_display(self._players[0])
         self._in_progress = True
         self._start_menu.destroy()
-        self._side_menu = SideMenu(self._master, self._players[0].get_hq(), self._hex_map, self._fighter_image_dict, self._fighter_list, self._icon_image_dict)
+        self._side_menu = SideMenu(self._master, self, self._players[0].get_hq(), self._hex_map, self._fighter_image_dict, self._fighter_list, self._icon_image_dict)
         self._side_menu.grid(column=7, row=0)
         self.bottom_menu = BottomMenu(self._master, self._players, self._end_turn_callback, self._icon_image_dict)
         self.bottom_menu.grid(column=0, row=21, columnspan=6, pady=5)

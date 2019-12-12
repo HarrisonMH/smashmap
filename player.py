@@ -110,7 +110,7 @@ class Player:
 
     def build_squad(self, fighter, hex, active_menu=None):
         # FIXME: Add squad cost calculation logic for duplicates
-        squad_cost = 250
+        squad_cost = self.get_new_squad_cost(fighter)
         if self._resources - squad_cost < 0:
             print("Player resources insufficient to build squad")
             return
@@ -143,3 +143,11 @@ class Player:
     def _initialize_squads(self, starting_squads):
         self.build_squad(starting_squads[0], self._hq)
         self.build_squad(starting_squads[1], self._hq)
+
+    def get_new_squad_cost(self, fighter):
+        base_cost = 250
+        multiplier = 1
+        for squad in self._squads:
+            if squad.get_fighter() == fighter:
+                multiplier += 1
+        return base_cost * multiplier
