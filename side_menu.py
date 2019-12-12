@@ -108,9 +108,9 @@ class SideMenu(tk.Frame):
         self._squad_2_icon_label = tk.Label(self, image=self._sq2_image)
         self._squad_2_icon_label.grid(row=current_row, column=2, columnspan=2)
         current_row += 1
-        self._squad_1_fighter_label = tk.Label(self, textvariable=self._sq1_fighter_var, font=(None, 10, "bold"), wraplength=50)
+        self._squad_1_fighter_label = tk.Label(self, textvariable=self._sq1_fighter_var, font=(None, 10, "bold"), wraplength=75)
         self._squad_1_fighter_label.grid(row=current_row, column=0, columnspan=2)
-        self._squad_2_fighter_label = tk.Label(self, textvariable=self._sq2_fighter_var, font=(None, 10, "bold"), wraplength=50)
+        self._squad_2_fighter_label = tk.Label(self, textvariable=self._sq2_fighter_var, font=(None, 10, "bold"), wraplength=75)
         self._squad_2_fighter_label.grid(row=current_row, column=2, columnspan=2)
         current_row += 1
         self._squad_1_kills_label = tk.Label(self, image=self._icon_image_dict["knife"]["map"],
@@ -209,9 +209,6 @@ class SideMenu(tk.Frame):
         self._build_squad_picker.config(state=squad_picker_state)
         self._squad_picker_var.set("")
 
-
-
-
     def update_all(self, hex):
         # FIXME: Update selected hex when advancing to next player
         self.set_new_values(hex)
@@ -222,6 +219,7 @@ class SideMenu(tk.Frame):
         fighter = self._build_squad_picker.get()
         if fighter != "":
             self._hex.get_owner().build_squad(fighter, self._hex)
+            self.update_all(self._hex)
 
     def _squad_picker_update_callback(self, var, index, mode):
         print("Picker updated:", self._squad_picker_var.get())

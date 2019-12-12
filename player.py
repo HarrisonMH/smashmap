@@ -145,9 +145,14 @@ class Player:
         self.build_squad(starting_squads[1], self._hq)
 
     def get_new_squad_cost(self, fighter):
+        """Charity rule: Allow player to build a new squad for all of their resources if they have no other squads and
+        cannot afford the full cost"""
         base_cost = 250
         multiplier = 1
-        for squad in self._squads:
-            if squad.get_fighter() == fighter:
-                multiplier += 1
-        return base_cost * multiplier
+        if len(self._squads) == 0 and self._resources <= base_cost:
+            return self._resources
+        else:
+            for squad in self._squads:
+                if squad.get_fighter() == fighter:
+                    multiplier += 1
+            return base_cost * multiplier
