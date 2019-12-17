@@ -6,7 +6,7 @@ import tkinter as tk
 
 
 class BattlePopup(tk.Toplevel):
-
+    # FIXME: Add betting mechanic
     def __init__(self, master, atk_squad, def_hex, fighter_image_dict, close_battle_popup_callback, hex_map_ref):
         super().__init__(master, borderwidth=4, relief="raised")
         self._atk_squad = atk_squad
@@ -118,6 +118,7 @@ class BattlePopup(tk.Toplevel):
 
     def _resolve_battle(self):
         if self._v_victor.get() == 0:
+            self._atk_squad.get_owner().adjust_vp(self._def_squads[self._v_defender.get()].get_bounty())
             self._def_squads[self._v_defender.get()].destroy_squad("hex")
             self._atk_squad.increment_kills()
             if len(self._def_hex.get_squads()) == 0:
@@ -125,7 +126,8 @@ class BattlePopup(tk.Toplevel):
             else:
                 self._atk_squad.take_turn()
         elif self._v_victor.get() == 1:
-            self._atk_squad.destroy_squad("hex")
             self._def_squads[self._v_defender.get()].increment_kills()
+            self._def_squads[self._v_defender.get()].get_owner().adjust_vp(self._atk_squad.get_bounty())
+            self._atk_squad.destroy_squad("hex")
                 
         self._close_battle_popup()

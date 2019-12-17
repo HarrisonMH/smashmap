@@ -8,12 +8,11 @@
 import tkinter as tk
 import math
 import os
+import json
 from hex_map import HexMap
-from hex_menu import HexMenu
 from start_menu import StartMenu
 from bottom_menu import BottomMenu
 from player import Player
-from player_menu import PlayerMenu
 from battle_popup import BattlePopup
 from end_turn_popup import EndTurnPopup
 from side_menu import SideMenu
@@ -23,6 +22,7 @@ COS_30 = math.cos(math.radians(30))
 SIN_30 = math.sin(math.radians(30))
 FIGHTER_ICON_PATH = "./images/fighter_icons"
 MAP_ICON_PATH = "./images/map_icons"
+SAVE_FILE_PATH = "./saves"
 
 
 class MainWindow(tk.Frame):
@@ -45,7 +45,7 @@ class MainWindow(tk.Frame):
 
     def _create_widgets(self, master):
         self._hex_map = HexMap(master, self, 50, self._side_menu_callback, self._end_turn_callback, self._next_player_callback)
-        self._start_menu = StartMenu(master, self._fighter_list, self._start_game_callback)
+        self._start_menu = StartMenu(master, self._fighter_list, self._start_game_callback, self._load_game_callback)
         self._start_menu.grid(column=0, row=0)
 
     # def _hex_menu_callback(self, hex):
@@ -66,7 +66,8 @@ class MainWindow(tk.Frame):
     def _start_game_callback(self, player_data):
         self._hex_map.grid(column=0, row=0, columnspan=6, rowspan=20)
         self._initialize_players(player_data)
-        self._hex_map.initialize_start_positions(player_data, self._players)
+        self._hex_map.initialize_structures()
+        self._hex_map.initialize_start_locations(self._players)
         self._hex_map.adjust_current_player_display(self._players[0])
         self._in_progress = True
         self._start_menu.destroy()
@@ -75,15 +76,54 @@ class MainWindow(tk.Frame):
         self.bottom_menu = BottomMenu(self._master, self._players, self._end_turn_callback, self._icon_image_dict)
         self.bottom_menu.grid(column=0, row=21, columnspan=6, pady=5)
 
+    def _load_game_callback(self, filename=None):
+        if filename is None:
+            save_file_path = SAVE_FILE_PATH + "/savedata.txt"
+        else:
+            save_file_path = SAVE_FILE_PATH + "/" + filename
+        f = open(save_file_path)
+        data_text = f.read()
+        data_dict = json.loads(data_text)
 
-    # def _player_menu_callback(self, player):
-    #     # player_num = int(event.widget.cget("text")[7])
-    #     print("Opening Player " + str(player.get_player_number()) + " menu")
-    #
-    #     self._side_menu.grid_forget()
-    #     self._side_menu = PlayerMenu(self._master, player, self._fighter_image_dict, self._hex_map)
-    #     self._side_menu.grid(column=11, row=0)
-    #     self._active_menu = "player"
+        self._hex_map.initialize_structures()
+        hex_list = self._hex_map.get_hex_list()
+        for player_data in data_dict["players"]:
+            self._players.append(Player(self, player_data, self._hex_map, self._hex_map.create_squad_icon_callback,
+                                        self._side_menu_callback, self._battle_popup_callback, self.get_current_player, True))
+            print("Setting HQ for", self._players[-1].get_name(), ": Hex", hex_list[player_data["hq_id"] - 1].get_id())
+            self._players[-1].set_hq(hex_list[player_data["hq_id"] - 1])
+            print("")
+            self._players[-1].set_resources(player_data["resources"])
+            self._players[-1].set_income(player_data["income"])
+            self._players[-1].set_territory_size(player_data["territory_size"])
+            self._players[-1].set_vp(player_data["vp"])
+            self._players[-1].set_vp_income(player_data["vp_income"])
+            for squad in player_data["squads"]:
+                self._players[-1].load_squad(squad)
+
+        for hex in data_dict["hexes"]:
+            for player in self._players:
+                # print("Hex owner:", type(hex["owner"]), "Player:", type(player.get_player_number()))
+                if hex["owner"] == player.get_player_number():
+                    print("Updating owner of hex", hex["id"])
+                    hex_list[hex["id"] - 1].change_owner(player, player.get_colour())
+                    break
+
+        self._turn_number = data_dict["game"]["turn"]
+        self._current_player_index = data_dict["game"]["current_player"]
+        self._current_player = self._players[self._current_player_index]
+        self._hex_map.adjust_current_player_display(self._current_player)
+        self._hex_map.adjust_turn_display(self._turn_number)
+
+        self._in_progress = True
+        self._start_menu.destroy()
+        self._hex_map.grid(column=0, row=0, columnspan=6, rowspan=20)
+
+        self._side_menu = SideMenu(self._master, self, self._players[0].get_hq(), self._hex_map,
+                                   self._fighter_image_dict, self._fighter_list, self._icon_image_dict)
+        self._side_menu.grid(column=7, row=0)
+        self.bottom_menu = BottomMenu(self._master, self._players, self._end_turn_callback, self._icon_image_dict)
+        self.bottom_menu.grid(column=0, row=21, columnspan=6, pady=5)
 
 
     def _battle_popup_callback(self, atk_squad, target_hex):
@@ -95,7 +135,7 @@ class MainWindow(tk.Frame):
         self._battle_popup.destroy()
 
     def _generate_fighter_list(self):
-        fighter_list = []
+        fighter_list = ["Random"]
         f = open("fighters.txt")
         fighter_list_raw = f.readlines()
         for fighter in fighter_list_raw:
@@ -113,6 +153,8 @@ class MainWindow(tk.Frame):
         print("Generating", len(filename_list), "fighter icons...")
         f_index = 0
         for fighter in fighter_list:
+            if fighter == "Random":
+                continue
             # print(fighter, f_index)
             raw_image = Image.open(FIGHTER_ICON_PATH + "/" + filename_list[f_index])
             menu_image = raw_image.resize((50, 50))
@@ -152,7 +194,7 @@ class MainWindow(tk.Frame):
 
     def _initialize_players(self, player_data):
         for player in player_data:
-            self._players.append(Player(self, player_data[player], self._hex_map.create_squad_icon_callback,
+            self._players.append(Player(self, player_data[player], self._hex_map, self._hex_map.create_squad_icon_callback,
                                         self._side_menu_callback, self._battle_popup_callback, self.get_current_player))
 
     def get_turn_number(self):
@@ -213,7 +255,7 @@ class MainWindow(tk.Frame):
             self.end_turn()
 
     def _next_player_callback(self):
-        # FIXME: Add check for remaining actions before allowing pass to next player
+        # FIXME: Change turn rotation to single action per player, until all actions exhausted for all players
         if self._current_player_index < len(self._players) - 1:
             self._current_player_index += 1
         else:
@@ -237,6 +279,63 @@ class MainWindow(tk.Frame):
         # print("Current player index: ", self._current_player_index)
         return self._players[self._current_player_index]
 
+    def get_fighter_list(self):
+        return self._fighter_list
+
+    def save_state_as_json(self):
+        # Players - > Squads -> Hexes
+        data_dict = {
+            "game": {
+                "turn": self._turn_number,
+                "current_player": self._current_player_index
+            },
+            "players": [],
+            "hexes": []
+        }
+        for player in self._players:
+            player_dict = {
+                "playernum": str(player.get_player_number()),
+                "name": player.get_name(),
+                "colour": player.get_colour(),
+                "hq_id": player.get_hq().get_id(),
+                "resources": player.get_resources(),
+                "income": player.get_income(),
+                "basecost": player.get_base_squad_cost(),
+                "forcerandom": player.get_force_random(),
+                "territory_size": player.get_territory_size(),
+                "vp": player.get_vp(),
+                "vp_income": player.get_vp_income(),
+                "squads": []
+            }
+            for squad in player.get_squads():
+                squad_dict = {
+                    "fighter": squad.get_fighter(),
+                    "kills": squad.get_kills(),
+                    "bounty": squad.get_bounty(),
+                    "location": squad.get_location().get_id(),
+                    "turn_taken": squad.get_turn_status()
+                }
+                player_dict["squads"].append(squad_dict)
+            data_dict["players"].append(player_dict)
+
+        for hex in self._hex_map.get_hex_list():
+            if hex.get_owner() is not None:
+                hex_dict = {
+                    "id": hex.get_id(),
+                    "owner": hex.get_owner().get_player_number()
+                }
+                data_dict["hexes"].append(hex_dict)
+        self.save_dict_to_file(data_dict)
+
+
+    def save_dict_to_file(self, data_dict):
+        json_data = json.dumps(data_dict, indent=4)
+        if not os.path.exists(SAVE_FILE_PATH):
+            os.mkdir(SAVE_FILE_PATH)
+        save_file = SAVE_FILE_PATH + "/savedata.txt"
+        file = open(save_file, 'w')
+        file.write(json_data)
+        file.close()
 
 
 if __name__ == "__main__":

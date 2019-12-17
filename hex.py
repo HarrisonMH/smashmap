@@ -16,10 +16,12 @@ class Hex:
         self._id = id
         self._coords = (row, column)
         self._adjacent_coords = adjacent_coords
+        self._adjacent_ids = []
+        self._bonus_adjacency_ids = []
+        self.initialize_adjacent_ids(self._adjacent_coords)
         self._ring_number = ring_number
         self._structure_coords = None
         self._structure_id = None
-        self._adjacent_ids = self.set_adjacent_ids(parent, adjacent_coords)
         self._squad_slot_ids = [None, None]
         self._squad_slot_coords = None
         self._res_value = 25
@@ -70,6 +72,8 @@ class Hex:
                 return self._ring_number + 1
             elif self._structure == "Refinery":
                 return self._ring_number + 5
+            elif self._structure == "HQ":
+                return self._ring_number - 1
         return self._ring_number
 
     def get_ring_depth(self):
@@ -100,15 +104,18 @@ class Hex:
     def get_adjacency_coords(self):
         return self._adjacent_coords
 
-    def set_adjacent_ids(self, parent, coord_list):
-        # FIXME: Refactor protected variable access
-        id_list = []
+    def initialize_adjacent_ids(self, coord_list):
         for coords in coord_list:
-            id_list.append(parent._coords_to_id(coords))
-        return id_list
+            self._adjacent_ids.append(self._parent.coords_to_id(coords))
 
     def get_adjacent_ids(self):
-        return self._adjacent_ids
+        adjacent_ids = self._adjacent_ids
+        if self._structure == "Vortex":
+            adjacent_ids = adjacent_ids + self._bonus_adjacency_ids
+        return adjacent_ids
+
+    def set_bonus_adjacency_ids(self, id_list):
+        self._bonus_adjacency_ids = id_list
 
     def check_if_squad_present(self):
         if self._squad_1 is not None or self._squad_2 is not None:
@@ -203,10 +210,10 @@ class Hex:
             print("No squad selected")
 
     def highlight_adjacent_hexes(self):
-        for hex_id in self._adjacent_ids:
+        for hex_id in self.get_adjacent_ids():
             self._hex_map_ref.itemconfig(hex_id, outline="blue", dash=10)
 
     def unhighlight_adjacent_hexes(self):
-        for hex_id in self._adjacent_ids:
+        for hex_id in self.get_adjacent_ids():
             self._hex_map_ref.itemconfig(hex_id, outline="black", dash=[])
 

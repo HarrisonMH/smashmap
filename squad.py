@@ -2,6 +2,7 @@
 #
 # Defines attributes of a squad
 
+import tkinter as tk
 
 class Squad:
 
@@ -17,6 +18,8 @@ class Squad:
         self._owner = owner
         self._fighter = fighter
         self._kills = 0
+        self.bounty_var = tk.StringVar()
+        self.bounty_var.set("1" + "           \n\n")
         self._hex_location = location
         # self._create_squad_icon_callback(self._hex_location, self._fighter, self._set_squad_icon_callback)
         self._create_squad_icon_callback(self)
@@ -35,8 +38,15 @@ class Squad:
     def get_kills(self):
         return self._kills
 
-    def increment_kills(self):
-        self._kills += 1
+    def set_kills(self, value):
+        self._kills = value
+
+    def get_bounty(self):
+        return int(self.bounty_var.get())
+
+    def increment_kills(self, amount=1):
+        self._kills += amount
+        self.bounty_var.set(str(1 + int(self._kills / 2)) + "           \n\n")
         return
 
     def take_turn(self):
@@ -76,15 +86,14 @@ class Squad:
         self._squad_icon.bind("<Button-3>", self._map_icon_right_click)
 
     def move_squad(self, new_loc_id, hex_map_ref, parent_menu_str):
-        # new_loc_id = int(event.widget.cget("text"))
         hex_list = hex_map_ref.get_hex_list()
         new_loc_hex = hex_list[new_loc_id - 1]
-        # print("Hex " + str(new_loc_hex.get_id()) + " occupied: " + str(new_loc_hex.check_if_squad_present()))
         if self.check_hex_for_enemy(new_loc_hex) is True and new_loc_hex.get_structure() != "HQ":
             self._battle_popup_callback(self, new_loc_hex)
         elif new_loc_hex.check_open_space() is True:
-            if new_loc_hex.get_structure() != "HQ" and new_loc_hex.get_owner != self._owner:
-                # hex_map_ref.hex_grid.tag_lower(self._squad_slot_id)
+            if new_loc_hex.get_structure() == "HQ" and new_loc_hex.get_owner() != self._owner:
+                print("Cannot move into enemy HQ")
+            else:
                 self._hex_location.unhighlight_adjacent_hexes()
                 self._hex_location.remove_squad(self._squad_slot_id)
                 new_loc_hex.add_squad(self)
@@ -97,8 +106,7 @@ class Squad:
                 self.refresh_active_menu(parent_menu_str)
                 self.set_location(new_loc_hex)
                 self.deselect_squad()
-            else:
-                print("Cannot move into enemy HQ")
+
         else:
             print("Can't move to this position: hex is full")
 
@@ -144,13 +152,15 @@ class Squad:
         self._set_selected_squad_callback(None)
 
     def refresh_active_menu(self, active_menu_str):
+        self._hex_location.update_side_menu()
+
         """Takes the name of the active menu in string format and invokes the callback to refresh the active menu."""
-        if active_menu_str == "player":
-            print("Refreshing player menu")
-            self._owner.show_player_menu()
-        elif active_menu_str == "hex":
-            print("Refreshing hex menu")
-            self._hex_location.update_side_menu()
+        # if active_menu_str == "player":
+        #     print("Refreshing player menu")
+        #     self._owner.show_player_menu()
+        # elif active_menu_str == "hex":
+        #     print("Refreshing hex menu")
+        #     self._hex_location.update_side_menu()
 
     def check_hex_for_enemy(self, hex):
         if hex.check_if_squad_present() is True:

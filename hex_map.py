@@ -13,6 +13,12 @@ COS_30 = math.cos(math.radians(30))
 SIN_30 = math.sin(math.radians(30))
 TEST_WIDTH_50 = COS_30 * 100
 
+CENTRE_HEX = 31
+FACTORY_POSITIONS = [15, 21, 24, 38, 41, 47]
+MINE_POSITIONS = [2, 6, 7, 4, 10, 11, 19, 28, 36, 26, 34, 43, 51, 52, 58, 60, 55, 56, 22, 23, 30, 32, 39, 40]
+VORTEX_POSITIONS = [3, 12, 18, 44, 50, 59]
+START_POSITIONS = [1, 5, 27, 35, 57, 61]
+
 
 class HexMap(tk.Frame):
 
@@ -84,11 +90,15 @@ class HexMap(tk.Frame):
         self._current_player_label_2 = tk.Label(self._map_menu, fg="white", width=10, font=(None, 10, "bold"))
         self._current_player_label_2.grid(row=current_row, column=1, sticky="W")
         current_row += 1
-        self._next_player_btn = tk.Button(self._map_menu, text="Next Player", font=(None, 9, "bold"), command=self._next_player_callback)
+        self._next_player_btn = tk.Button(self._map_menu, text="Next Player", font=(None, 9, "bold"), command=self._next_player_click)
         self._next_player_btn.grid(row=current_row, column=0, columnspan=2, sticky="W"+"E")
         current_row += 1
-        self._end_turn_btn = tk.Button(self._map_menu, text="End Turn", command=self._end_turn_callback)
-        self._end_turn_btn.grid(row=current_row, column=0, columnspan=2, sticky="W" + "E")
+        self._save_game_btn = tk.Button(self._map_menu, text="Save", command=self._parent.save_state_as_json)
+        self._save_game_btn.grid(row=current_row, column=0, columnspan=2, sticky="W" + "E")
+
+        # Next turn button for debugging
+        # self._end_turn_btn = tk.Button(self._map_menu, text="End Turn", command=self._end_turn_callback)
+        # self._end_turn_btn.grid(row=current_row, column=0, columnspan=2, sticky="W" + "E")
 
         self._grid_menu_window = self.hex_grid.create_window(0, 0, anchor="nw", window=self._map_menu)
 
@@ -233,7 +243,7 @@ class HexMap(tk.Frame):
             return 5
 
 
-    def _coords_to_id(self, coords):
+    def coords_to_id(self, coords):
         """Translates 2D coordinates to a Hex ID"""
         row_total = 0
         for row in range(coords[0]):
@@ -243,39 +253,49 @@ class HexMap(tk.Frame):
         return row_total + col_val
 
 
-    def initialize_start_positions(self, player_data, player_list):
-        centre_hex = 31
-        self._hexes[centre_hex - 1].set_structure("Refinery", self.create_structure_callback)
+    def initialize_structures(self):
+        self._hexes[CENTRE_HEX - 1].set_structure("Refinery", self.create_structure)
 
-        factory_positions = [15, 21, 24, 38, 41, 47]
-        for hex in factory_positions:
-            self._hexes[hex - 1].set_structure("Factory", self.create_structure_callback)
+        for hex in FACTORY_POSITIONS:
+            self._hexes[hex - 1].set_structure("Factory", self.create_structure)
 
-        mine_positions = [3, 12, 18, 44, 50, 59, 22, 23, 30, 32, 39, 40]
-        for hex in mine_positions:
-            self._hexes[hex - 1].set_structure("Mine", self.create_structure_callback)
+        for hex in MINE_POSITIONS:
+            self._hexes[hex - 1].set_structure("Mine", self.create_structure)
 
-        start_positions = [1, 5, 27, 35, 57, 61]
+        for hex in VORTEX_POSITIONS:
+            self._hexes[hex - 1].set_structure("Vortex", self.create_structure)
+
+        # current_player_index = 0
+        for hex in START_POSITIONS:
+            self._hexes[hex - 1].set_structure("HQ", self.create_structure)
+
+            # current_player = player_list[current_player_index]
+            # self._hexes[hex - 1].change_owner(current_player, current_player.get_colour())
+            # for adj_hex in self._hexes[hex - 1].get_adjacency_coords():
+            #     adj_id = self.coords_to_id(adj_hex)
+            #     self._hexes[adj_id - 1].change_owner(current_player, current_player.get_colour())
+            #
+            # current_player.set_hq(self._hexes[hex - 1])
+            #
+            # current_player_index += 1
+
+    def initialize_start_locations(self, player_list):
         current_player_index = 0
-        for hex in start_positions:
+        for hex in START_POSITIONS:
             current_player = player_list[current_player_index]
             self._hexes[hex - 1].change_owner(current_player, current_player.get_colour())
-            self._hexes[hex - 1].set_structure("HQ", self.create_structure_callback)
             for adj_hex in self._hexes[hex - 1].get_adjacency_coords():
-                adj_id = self._coords_to_id(adj_hex)
+                adj_id = self.coords_to_id(adj_hex)
                 self._hexes[adj_id - 1].change_owner(current_player, current_player.get_colour())
-
-            # current_player.set_hq(hex)
             current_player.set_hq(self._hexes[hex - 1])
-
             current_player_index += 1
 
 
-    def create_structure_callback(self, hex, structure):
+    def create_structure(self, hex, structure):
         if structure == "HQ":
             structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._icon_image_dict["hq"]["map"])
             hex.set_structure_id(structure_id)
-            hex.set_value(175)
+            hex.set_value(100)
         elif structure == "Refinery":
             structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._icon_image_dict["refinery"]["map"])
             hex.set_structure_id(structure_id)
@@ -289,11 +309,19 @@ class HexMap(tk.Frame):
                                                       image=self._parent._icon_image_dict["mine"]["map"])
             hex.set_structure_id(structure_id)
             hex.set_value(50)
+        elif structure == "Vortex":
+            structure_id = self.hex_grid.create_image(hex.get_structure_coords(),
+                                                      image=self._parent._icon_image_dict["vortex"]["map"])
+            hex.set_structure_id(structure_id)
+            vortex_adjacency_list = VORTEX_POSITIONS.copy()
+            vortex_adjacency_list.remove(hex.get_id())
+            hex.set_bonus_adjacency_ids(vortex_adjacency_list)
 
     def create_squad_icon_callback(self, squad):
         squad_hex = squad.get_location()
-        squad_icon = tk.Label(self, image=self._parent._fighter_image_dict[squad.get_fighter()]["map"], borderwidth=2,
-                              relief="ridge", background=self.hex_grid.itemcget(squad_hex.get_id(), "fill"))
+        squad_icon = tk.Label(self, textvariable=squad.bounty_var, font=(None, 6, "bold"), fg="white", compound="center",
+                              anchor="ne", image=self._parent._fighter_image_dict[squad.get_fighter()]["map"],
+                              borderwidth=2, relief="ridge", background=squad.get_owner().get_colour())
         # starting_slot = squad_hex.get_first_open_slot()
         # squad.set_squad_icon(squad_icon, starting_slot)
         squad.set_squad_icon(squad_icon)
@@ -306,9 +334,17 @@ class HexMap(tk.Frame):
     def squad_context_menu(self, squad):
         squad_coords = self.hex_grid.coords(squad.get_squad_slot_id())
         canvas_item_id = self.hex_grid.create_window(squad_coords[0] + 15, squad_coords[1], anchor="w")
-        self._squad_context_menu = SquadContextMenu(self, squad, canvas_item_id, self._destroy_squad_context_menu_callback)
-        self.hex_grid.itemconfig(canvas_item_id, window=self._squad_context_menu)
-        self._squad_context_menu.bind("<Leave>", self._squad_context_menu.mouse_exit)
+        squad_context_menu = SquadContextMenu(self, squad, canvas_item_id, self._destroy_squad_context_menu_callback)
+        self.hex_grid.itemconfig(canvas_item_id, window=squad_context_menu)
+        squad_context_menu.bind("<Leave>", squad_context_menu.mouse_exit)
 
     def _destroy_squad_context_menu_callback(self, canvas_item_id):
         self.hex_grid.delete(canvas_item_id)
+
+    def _next_player_click(self):
+        current_player = self._parent.get_current_player()
+        if current_player.check_remaining_actions() is True:
+            # FIXME: Add warning popup when trying to end turn with idle squads, unspent resources
+            print("Player has actions remaining!")
+        else:
+            self._next_player_callback()
