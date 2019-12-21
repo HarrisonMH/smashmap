@@ -18,6 +18,7 @@ class Player:
         self._hex_menu_callback = hex_menu_callback
         self._battle_popup_callback = battle_popup_callback
         self._get_current_player_callback = get_current_player_callback
+        self._play_log_ref = master.get_play_log()
         self._player_number = int(player_data["playernum"])
         self._name = player_data["name"]
         self._colour = player_data["colour"]
@@ -169,6 +170,7 @@ class Player:
             if active_menu is not None:
                 self._squads[-1].refresh_active_menu(active_menu)
             # print("Building squad in hex: ", hex)
+        self._master.next_player()
 
     def load_squad(self, squad_dict):
         hex_list = self._hex_map_ref.get_hex_list()
@@ -189,6 +191,8 @@ class Player:
         for squad in self._squads:
             if squad.get_turn_status() is False:
                 return True
+        if self._resources >= self._base_squad_cost:
+            return True
         return False
 
     # def show_player_menu(self, event=None):
@@ -219,3 +223,6 @@ class Player:
 
     def set_force_random(self, value):
         self._force_random_squad_selection = value
+
+    def get_main_window(self):
+        return self._master

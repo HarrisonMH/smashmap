@@ -16,6 +16,8 @@ from player import Player
 from battle_popup import BattlePopup
 from end_turn_popup import EndTurnPopup
 from side_menu import SideMenu
+from play_log import PlayLog
+
 from PIL import Image, ImageTk, ImageOps
 
 COS_30 = math.cos(math.radians(30))
@@ -30,7 +32,6 @@ class MainWindow(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master, bg="white")
         self._master = master
-
         self._fighter_list = self._generate_fighter_list()
         self._fighter_image_dict = self._generate_fighter_images(self._fighter_list)
         self._icon_image_dict = self._generate_icons()
@@ -44,9 +45,12 @@ class MainWindow(tk.Frame):
         self._create_widgets(master)
 
     def _create_widgets(self, master):
-        self._hex_map = HexMap(master, self, 50, self._side_menu_callback, self._end_turn_callback, self._next_player_callback)
+        self._hex_map = HexMap(master, self, 50, self._side_menu_callback, self._end_turn_callback, self.next_player)
         self._start_menu = StartMenu(master, self._fighter_list, self._start_game_callback, self._load_game_callback)
         self._start_menu.grid(column=0, row=0)
+        self._status_menu = tk.Frame(master, width=20, height=20, background="white")
+        self._play_log = PlayLog(self._status_menu, background="white")
+        self._play_log.pack()
 
     # def _hex_menu_callback(self, hex):
     #     print("Hex menu callback, hex", hex.get_id())
@@ -64,7 +68,7 @@ class MainWindow(tk.Frame):
 
 
     def _start_game_callback(self, player_data):
-        self._hex_map.grid(column=0, row=0, columnspan=6, rowspan=20)
+        self._hex_map.grid(column=1, row=0, rowspan=20)
         self._initialize_players(player_data)
         self._hex_map.initialize_structures()
         self._hex_map.initialize_start_locations(self._players)
@@ -72,9 +76,11 @@ class MainWindow(tk.Frame):
         self._in_progress = True
         self._start_menu.destroy()
         self._side_menu = SideMenu(self._master, self, self._players[0].get_hq(), self._hex_map, self._fighter_image_dict, self._fighter_list, self._icon_image_dict)
-        self._side_menu.grid(column=7, row=0)
+        self._side_menu.grid(column=2, row=0)
         self.bottom_menu = BottomMenu(self._master, self._players, self._end_turn_callback, self._icon_image_dict)
-        self.bottom_menu.grid(column=0, row=21, columnspan=6, pady=5)
+        self.bottom_menu.grid(column=1, row=21, pady=5)
+        self._status_menu.grid(column=0, row=0)
+
 
     def _load_game_callback(self, filename=None):
         if filename is None:
@@ -230,7 +236,7 @@ class MainWindow(tk.Frame):
                 max_value = player.get_vp()
             else:
                 for i, player_sorted in enumerate(sorted_list):
-                    if player.get_vp() >= player_sorted.get_vp() and player.get_vp() < sorted_list[i+1].get_vp():
+                    if player_sorted.get_vp() <= player.get_vp() < sorted_list[i + 1].get_vp():
                         sorted_list.insert(i+1, player)
                         break
         print("New turn order:")
@@ -254,13 +260,25 @@ class MainWindow(tk.Frame):
         else:
             self.end_turn()
 
-    def _next_player_callback(self):
-        # FIXME: Change turn rotation to single action per player, until all actions exhausted for all players
+    # def _next_player_callback(self):
+    #     if self._current_player_index < len(self._players) - 1:
+    #         self._current_player_index += 1
+    #     else:
+    #         self._current_player_index = 0
+    #         self.end_turn()
+    #     self._hex_map.adjust_current_player_display(self.get_current_player())
+
+    def next_player(self, pass_count=0):
+        # Revised to rotate after each action
         if self._current_player_index < len(self._players) - 1:
             self._current_player_index += 1
         else:
             self._current_player_index = 0
+        if pass_count == len(self._players):
             self.end_turn()
+        if self.get_current_player().check_remaining_actions() is False:
+            self.next_player(pass_count + 1)
+
         self._hex_map.adjust_current_player_display(self.get_current_player())
 
     def end_turn(self):
@@ -270,8 +288,6 @@ class MainWindow(tk.Frame):
             player.collect_income()
             player.collect_vp()
             player.refresh_player_squads()
-        # sorted_player_list = self.sort_players_by_vp()
-        # self.bottom_menu.refresh_widget_order(sorted_player_list)
         self._players = self.sort_players_by_vp()
         self.bottom_menu.refresh_widget_order(self._players)
 
@@ -337,10 +353,13 @@ class MainWindow(tk.Frame):
         file.write(json_data)
         file.close()
 
+    def get_play_log(self):
+        return self._play_log
+
 
 if __name__ == "__main__":
     root = tk.Tk()
-    root.title("Smash Map Ladder v0.2")
+    root.title("Smash Map Ladder v0.8")
     root.geometry("+100+50")
     root.resizable(False, False)
     app = MainWindow(root)

@@ -3,6 +3,7 @@
 # Defines attributes of a squad
 
 import tkinter as tk
+from play_log import PlayLog
 
 class Squad:
 
@@ -25,6 +26,8 @@ class Squad:
         self._create_squad_icon_callback(self)
 
         self._turn_taken = False
+
+        self._play_log_ref = self._owner._play_log_ref
 
     def get_owner_name(self):
         return self._owner.get_name()
@@ -103,9 +106,12 @@ class Squad:
                     new_loc_hex.get_owner().adjust_vp_income(new_loc_hex.get_vp_value() * -1)
                     new_loc_hex.change_owner(None, "white")
                 self.take_turn()
+                self._owner.get_main_window().next_player()
                 self.refresh_active_menu(parent_menu_str)
+                self._play_log_ref.create_new_log("move", player1=self._owner, squad1=self, hex1=self._hex_location, hex2=new_loc_hex)
                 self.set_location(new_loc_hex)
                 self.deselect_squad()
+
 
         else:
             print("Can't move to this position: hex is full")
@@ -121,7 +127,6 @@ class Squad:
 
     def _map_icon_click(self, event):
         # print("Map icon: ", self._fighter, " in slot ", self._squad_slot_id)
-        # FIXME: Add deselection logic when clicking on a selected squad
         if self._get_current_player_callback() == self._owner:
             current_selected_squad = self._get_selected_squad_callback()
             if current_selected_squad == self:
@@ -175,6 +180,7 @@ class Squad:
         if self._hex_location.get_owner() is None:
             self._hex_location.change_owner(self._owner, self._owner.get_colour())
             self.take_turn()
+            self._owner.get_main_window().next_player()
             self._owner.adjust_territory_size(1)
             self._owner.adjust_income(self._hex_location.get_value())
             self._owner.adjust_vp_income(self._hex_location.get_vp_value())

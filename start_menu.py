@@ -10,7 +10,7 @@ COLOUR_ENTRY = 4
 FIGHTER_1_ENTRY = 6
 FIGHTER_2_ENTRY = 8
 
-
+# FIXME: Add validation to prevent duplicate player names
 class StartMenu(tk.Frame):
 
     def __init__(self, master, fighter_list, start_game_callback, load_game_callback):
@@ -64,18 +64,18 @@ class StartMenu(tk.Frame):
     def start_game(self):
         player_data = {}
         current_player = 1
-        for _player_inputs in self._players:
+        for _player_input in self._players:
             player_key = "p" + str(current_player)
-            if _player_inputs[NAME_ENTRY].get() == "":
+            if _player_input[NAME_ENTRY].get() == "":
                 continue
             player_data[player_key] = {}
             player_data[player_key]["playernum"] = current_player
-            player_data[player_key]["name"] = _player_inputs.get_name()
-            player_data[player_key]["colour"] = _player_inputs.get_colour()
-            player_data[player_key]["fighter1"] = _player_inputs.get_fighter_1()
-            player_data[player_key]["fighter2"] = _player_inputs.get_fighter_2()
-            player_data[player_key]["basecost"] = _player_inputs.get_base_cost()
-            player_data[player_key]["forcerandom"] = _player_inputs.get_force_random()
+            player_data[player_key]["name"] = _player_input.get_name()
+            player_data[player_key]["colour"] = _player_input.get_colour()
+            player_data[player_key]["fighter1"] = _player_input.get_fighter_1()
+            player_data[player_key]["fighter2"] = _player_input.get_fighter_2()
+            player_data[player_key]["basecost"] = _player_input.get_base_cost()
+            player_data[player_key]["forcerandom"] = _player_input.get_force_random()
             current_player += 1
 
         self._start_game_callback(player_data)

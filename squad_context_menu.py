@@ -31,6 +31,8 @@ class SquadContextMenu(tk.Frame):
 
     def _context_pass(self):
         self._squad.take_turn()
+        self._squad.get_location().unhighlight_adjacent_hexes()
+        self._squad.get_owner().get_main_window().next_player()
         self._destroy_squad_context_menu_callback(self._canvas_item_id)
         # self.destroy()
 

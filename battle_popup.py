@@ -9,6 +9,7 @@ class BattlePopup(tk.Toplevel):
     # FIXME: Add betting mechanic
     def __init__(self, master, atk_squad, def_hex, fighter_image_dict, close_battle_popup_callback, hex_map_ref):
         super().__init__(master, borderwidth=4, relief="raised")
+        self._main_window = master
         self._atk_squad = atk_squad
         self._def_hex = def_hex
         self._fighter_image_dict = fighter_image_dict
@@ -19,6 +20,9 @@ class BattlePopup(tk.Toplevel):
         self._def_select = None
 
         self._create_widgets()
+
+        # Prevents interaction with main window when popup is active
+        self.grab_set()
 
     def _create_widgets(self):
         # self = tk.Toplevel(self, borderwidth=4, relief="raised")
@@ -105,9 +109,11 @@ class BattlePopup(tk.Toplevel):
         current_row += 1
 
         self._cancel_btn = tk.Button(self, text="Cancel", command=self._close_battle_popup)
-        self._cancel_btn.grid(row=current_row, column=2, padx=5, pady=10)
+        self._cancel_btn.grid(row=current_row, column=1, padx=5, pady=10)
         self._confirm_btn = tk.Button(self, text="Confirm", state="disabled", command=self._resolve_battle)
-        self._confirm_btn.grid(row=current_row, column=3, padx=5, pady=10)
+        self._confirm_btn.grid(row=current_row, column=2, padx=5, pady=10)
+        self._defer_btn = tk.Button(self, text="Defer", command=self._close_battle_popup)
+        self._defer_btn.grid(row=current_row, column=3, padx=5, pady=10)
 
     def _select_defending_squad(self):
         self._victory_select_attacker.config(state="normal")
@@ -129,5 +135,6 @@ class BattlePopup(tk.Toplevel):
             self._def_squads[self._v_defender.get()].increment_kills()
             self._def_squads[self._v_defender.get()].get_owner().adjust_vp(self._atk_squad.get_bounty())
             self._atk_squad.destroy_squad("hex")
+        self._main_window.next_player()
                 
         self._close_battle_popup()
