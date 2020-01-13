@@ -17,6 +17,7 @@ from battle_popup import BattlePopup
 from end_turn_popup import EndTurnPopup
 from side_menu import SideMenu
 from play_log import PlayLog
+from battle_in_progress import BattleInProgress
 
 from PIL import Image, ImageTk, ImageOps
 
@@ -68,7 +69,7 @@ class MainWindow(tk.Frame):
 
 
     def _start_game_callback(self, player_data):
-        self._hex_map.grid(column=1, row=0, rowspan=20)
+        self._hex_map.grid(column=1, row=0)
         self._initialize_players(player_data)
         self._hex_map.initialize_structures()
         self._hex_map.initialize_start_locations(self._players)
@@ -76,10 +77,11 @@ class MainWindow(tk.Frame):
         self._in_progress = True
         self._start_menu.destroy()
         self._side_menu = SideMenu(self._master, self, self._players[0].get_hq(), self._hex_map, self._fighter_image_dict, self._fighter_list, self._icon_image_dict)
-        self._side_menu.grid(column=2, row=0)
+        self._side_menu.grid(column=2, row=0, rowspan=2, sticky="n")
         self.bottom_menu = BottomMenu(self._master, self._players, self._end_turn_callback, self._icon_image_dict)
-        self.bottom_menu.grid(column=1, row=21, pady=5)
-        self._status_menu.grid(column=0, row=0)
+        self.bottom_menu.grid(column=1, row=1, pady=5)
+        self._status_menu.grid(column=0, row=0, rowspan=2, sticky="nw")
+        self._play_log.create_new_log("new_turn", turn_num=self._turn_number)
 
 
     def _load_game_callback(self, filename=None):
@@ -123,13 +125,14 @@ class MainWindow(tk.Frame):
 
         self._in_progress = True
         self._start_menu.destroy()
-        self._hex_map.grid(column=0, row=0, columnspan=6, rowspan=20)
+        self._hex_map.grid(column=1, row=0)
 
         self._side_menu = SideMenu(self._master, self, self._players[0].get_hq(), self._hex_map,
                                    self._fighter_image_dict, self._fighter_list, self._icon_image_dict)
-        self._side_menu.grid(column=7, row=0)
+        self._side_menu.grid(column=2, row=0, rowspan=2, sticky="n")
         self.bottom_menu = BottomMenu(self._master, self._players, self._end_turn_callback, self._icon_image_dict)
-        self.bottom_menu.grid(column=0, row=21, columnspan=6, pady=5)
+        self.bottom_menu.grid(column=1, row=1, pady=5)
+        self._status_menu.grid(column=0, row=0, rowspan=2, sticky="nw")
 
 
     def _battle_popup_callback(self, atk_squad, target_hex):
@@ -290,6 +293,7 @@ class MainWindow(tk.Frame):
             player.refresh_player_squads()
         self._players = self.sort_players_by_vp()
         self.bottom_menu.refresh_widget_order(self._players)
+        self._play_log.create_new_log("new_turn", turn_num=self._turn_number)
 
     def get_current_player(self):
         # print("Current player index: ", self._current_player_index)
@@ -355,6 +359,9 @@ class MainWindow(tk.Frame):
 
     def get_play_log(self):
         return self._play_log
+
+    def create_bip_callback(self):
+        pass
 
 
 if __name__ == "__main__":

@@ -93,6 +93,8 @@ class Squad:
         new_loc_hex = hex_list[new_loc_id - 1]
         if self.check_hex_for_enemy(new_loc_hex) is True and new_loc_hex.get_structure() != "HQ":
             self._battle_popup_callback(self, new_loc_hex)
+            self._play_log_ref.create_new_log("attack", player1=self.get_owner(), player2=new_loc_hex.get_squads()[0].get_owner(),
+                                              squad1=self, hex1=self.get_location(), hex2=new_loc_hex)
         elif new_loc_hex.check_open_space() is True:
             if new_loc_hex.get_structure() == "HQ" and new_loc_hex.get_owner() != self._owner:
                 print("Cannot move into enemy HQ")
@@ -106,10 +108,10 @@ class Squad:
                     new_loc_hex.get_owner().adjust_vp_income(new_loc_hex.get_vp_value() * -1)
                     new_loc_hex.change_owner(None, "white")
                 self.take_turn()
-                self._owner.get_main_window().next_player()
                 self.refresh_active_menu(parent_menu_str)
                 self._play_log_ref.create_new_log("move", player1=self._owner, squad1=self, hex1=self._hex_location, hex2=new_loc_hex)
                 self.set_location(new_loc_hex)
+                self._owner.get_main_window().next_player()
                 self.deselect_squad()
 
 
@@ -184,5 +186,10 @@ class Squad:
             self._owner.adjust_territory_size(1)
             self._owner.adjust_income(self._hex_location.get_value())
             self._owner.adjust_vp_income(self._hex_location.get_vp_value())
+            self._play_log_ref.create_new_log("colonize", player1=self._owner, squad1=self, hex1=self._hex_location)
             # FIXME: This needs to be adjusted with the right panel menu overhaul
             self.refresh_active_menu("hex")
+
+    def pass_action(self):
+        self.take_turn()
+        self._play_log_ref.create_new_log("pass", player1=self._owner, squad1=self, hex1=self._hex_location)

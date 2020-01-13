@@ -11,11 +11,13 @@ class BattlePopup(tk.Toplevel):
         super().__init__(master, borderwidth=4, relief="raised")
         self._main_window = master
         self._atk_squad = atk_squad
+        self._atk_player = atk_squad.get_owner()
         self._def_hex = def_hex
         self._fighter_image_dict = fighter_image_dict
         self._close_battle_popup = close_battle_popup_callback
         self._hex_map_ref = hex_map_ref
         self._def_squads = def_hex.get_squads()
+        self._def_player = self._def_squads[0].get_owner()
         self._def_count = len(self._def_squads)
         self._def_select = None
 
@@ -122,9 +124,17 @@ class BattlePopup(tk.Toplevel):
     def _select_wining_squad(self):
         self._confirm_btn.config(state="normal")
 
+    def generate_combat_log(self, winning_player):
+        self._main_window.get_play_log().create_new_log("combat", player1=self._atk_player, player2=self._def_player,
+                                                        squad1=self._atk_squad,
+                                                        squad2=self._def_squads[self._v_defender.get()],
+                                                        victor=winning_player, hex1=self._def_hex)
+
     def _resolve_battle(self):
         if self._v_victor.get() == 0:
-            self._atk_squad.get_owner().adjust_vp(self._def_squads[self._v_defender.get()].get_bounty())
+            winning_player = self._atk_player
+            self.generate_combat_log(winning_player)
+            self._atk_player.adjust_vp(self._def_squads[self._v_defender.get()].get_bounty())
             self._def_squads[self._v_defender.get()].destroy_squad("hex")
             self._atk_squad.increment_kills()
             if len(self._def_hex.get_squads()) == 0:
@@ -132,9 +142,11 @@ class BattlePopup(tk.Toplevel):
             else:
                 self._atk_squad.take_turn()
         elif self._v_victor.get() == 1:
+            winning_player = self._def_player
+            self.generate_combat_log(winning_player)
             self._def_squads[self._v_defender.get()].increment_kills()
-            self._def_squads[self._v_defender.get()].get_owner().adjust_vp(self._atk_squad.get_bounty())
+            self._def_player.adjust_vp(self._atk_squad.get_bounty())
             self._atk_squad.destroy_squad("hex")
         self._main_window.next_player()
-                
+
         self._close_battle_popup()

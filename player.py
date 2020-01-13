@@ -155,6 +155,9 @@ class Player:
         if new_fighter == "Random":
             fighter_list = self._master.get_fighter_list()
             new_fighter = fighter_list[r.randint(1, len(fighter_list) - 1)]
+            is_random = True
+        else:
+            is_random = False
         if self._resources - squad_cost < 0:
             print("Player resources insufficient to build squad")
             return
@@ -170,6 +173,7 @@ class Player:
             if active_menu is not None:
                 self._squads[-1].refresh_active_menu(active_menu)
             # print("Building squad in hex: ", hex)
+            self._master.get_play_log().create_new_log("build", player1=self, squad1=self._squads[-1], hex1=hex, is_random=is_random)
         self._master.next_player()
 
     def load_squad(self, squad_dict):

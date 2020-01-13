@@ -16,16 +16,18 @@ class PlayLog(tk.Frame):
         self._log_list = []
         self._display_log = []
 
-        self._header = tk.Label(self, text="Play Log")
-        self._header.pack()
+        self._header = tk.Label(self, text="Play Log", font=(None, 14, "bold"))
+        self._header.pack(fill="both")
 
+
+    # FIXME: Add logic for moving into undefended enemy territory
     def create_new_log(self, log_type, **kwargs):
         if log_type == "move":
             self._log_list.append(PlayLog._create_move_log(log_type, kwargs))
         elif log_type == "attack":
             self._log_list.append(PlayLog._create_attack_log(log_type, kwargs))
         elif log_type == "combat":
-            self._log_list.append(PlayLog._create_attack_log(log_type, kwargs))
+            self._log_list.append(PlayLog._create_combat_log(log_type, kwargs))
         elif log_type == "pass":
             self._log_list.append(PlayLog._create_pass_log(log_type, kwargs))
         elif log_type == "build":
@@ -37,16 +39,16 @@ class PlayLog(tk.Frame):
         print(self._log_list[-1].get_text_log())
         self._display_new_text_log()
 
-
     def _display_new_text_log(self):
         log_length = len(self._log_list)
         print("Log count: ", len(self._display_log))
         if len(self._display_log) > DISPLAY_SIZE:
             self._display_log[0].destroy()
             del self._display_log[0]
-        self._display_log.append(tk.Label(self, text=self._log_list[-1].get_text_log(), width=40, anchor="w"))
-        self._display_log[-1].pack()
-
+        self._display_log.append(tk.Label(self, text=self._log_list[-1].get_text_log(), width=45, anchor="w"))
+        if self._log_list[-1].get_log_type() == "new_turn":
+            self._display_log[-1].config(font=(None, 10, "bold"))
+        self._display_log[-1].pack(fill="both")
 
     @staticmethod
     def _create_move_log(log_type, kwargs):
@@ -95,7 +97,10 @@ class PlayLog(tk.Frame):
         hex_id = kwargs["hex1"].get_id()
         structure = kwargs["hex1"].get_structure()
         # FIXME: Add code to display when squad build is random
-        is_random = False
+        if "is_random" in kwargs:
+            is_random = kwargs["is_random"]
+        else:
+            is_random = False
         new_log_line = LogLine(log_type, player_name=player_name, fighter=fighter, hex_id=hex_id, structure=structure,
                                is_random=is_random)
         return new_log_line

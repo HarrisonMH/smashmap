@@ -57,6 +57,9 @@ class LogLine:
             if "is_random" not in self._kwargs:
                 self._kwargs["random"] = False
 
+    def get_log_type(self):
+        return self._log_type
+
     @staticmethod
     def get_move_text(kw):
         template = "{} moved {} from Hex {} to Hex {}"
@@ -73,9 +76,9 @@ class LogLine:
     @staticmethod
     def get_combat_text(kw):
         if kw["victor"] == kw["atk_player"]:
-            template = "{0}({1}) defeated {2}({3}) in Hex {4}"
+            template = "{0} ({1}) defeated {2} ({3}) in Hex {4}"
         elif kw["victor"] == kw["def_player"]:
-            template = "{2}({3}) defended an attack from {0}({1}) in Hex {4}"
+            template = "{2} ({3}) defended an attack from {0} ({1}) in Hex {4}"
         formatted_text = template.format(kw["atk_player"], kw["atk_fighter"], kw["def_player"], kw["def_fighter"], kw["hex_id"])
         return formatted_text
 
@@ -118,6 +121,8 @@ class LogLine:
                                           "  fighter: str\n"
                                           "  is_vortex: bool\n"
                                           "  is_attack: bool")
+        elif log_type == "attack":
+            pass
         elif log_type == "combat":
             pass
         elif log_type == "pass":
@@ -129,4 +134,4 @@ class LogLine:
         elif log_type == "new_turn":
             pass
         else:
-            raise ValueError("Invalid argument for ''log_type''. Valid arguments: move, combat, pass, build, colonize, new_turn")
+            raise ValueError("Invalid argument for 'log_type'. Valid arguments: move, attack, combat, pass, build, colonize, new_turn")
