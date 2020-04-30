@@ -1,7 +1,7 @@
 {
     "game": {
-        "turn": 3,
-        "current_player": 0
+        "turn": 4,
+        "current_player": 5
     },
     "players": [
         {
@@ -9,205 +9,33 @@
             "name": "Matt",
             "colour": "goldenrod",
             "hq_id": 1,
-            "resources": 350,
-            "income": 250,
+            "resources": 250,
+            "income": 200,
             "basecost": 300,
             "forcerandom": 1,
-            "territory_size": 4,
-            "vp": 14,
-            "vp_income": 7,
+            "territory_size": 3,
+            "vp": 20,
+            "vp_income": 5,
             "squads": [
                 {
                     "fighter": "Peach",
                     "kills": 0,
                     "bounty": 1,
-                    "location": 14,
+                    "location": 15,
                     "turn_taken": false
                 },
                 {
                     "fighter": "Captain Falcon",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 8,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Isabelle",
-                    "kills": 0,
+                    "kills": 1,
                     "bounty": 1,
                     "location": 2,
                     "turn_taken": false
-                }
-            ]
-        },
-        {
-            "playernum": "2",
-            "name": "Joe",
-            "colour": "red",
-            "hq_id": 5,
-            "resources": 250,
-            "income": 250,
-            "basecost": 250,
-            "forcerandom": 1,
-            "territory_size": 4,
-            "vp": 14,
-            "vp_income": 7,
-            "squads": [
-                {
-                    "fighter": "Ness",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 9,
-                    "turn_taken": false
                 },
                 {
-                    "fighter": "Joker",
+                    "fighter": "Pac Man",
                     "kills": 0,
                     "bounty": 1,
-                    "location": 17,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Hero",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 3,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Ridley",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 10,
-                    "turn_taken": false
-                }
-            ]
-        },
-        {
-            "playernum": "3",
-            "name": "Alex",
-            "colour": "green",
-            "hq_id": 27,
-            "resources": 250,
-            "income": 250,
-            "basecost": 250,
-            "forcerandom": 1,
-            "territory_size": 4,
-            "vp": 14,
-            "vp_income": 7,
-            "squads": [
-                {
-                    "fighter": "Ganondorf",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 20,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Villager",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 29,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Bayonetta",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 37,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Young Link",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 19,
-                    "turn_taken": false
-                }
-            ]
-        },
-        {
-            "playernum": "4",
-            "name": "Kit",
-            "colour": "darkorange",
-            "hq_id": 35,
-            "resources": 250,
-            "income": 250,
-            "basecost": 250,
-            "forcerandom": 1,
-            "territory_size": 4,
-            "vp": 14,
-            "vp_income": 7,
-            "squads": [
-                {
-                    "fighter": "Ness",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 33,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Zelda",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 42,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Cloud",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 25,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Pit",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 34,
-                    "turn_taken": false
-                }
-            ]
-        },
-        {
-            "playernum": "5",
-            "name": "Alvin",
-            "colour": "darkcyan",
-            "hq_id": 57,
-            "resources": 250,
-            "income": 250,
-            "basecost": 250,
-            "forcerandom": 1,
-            "territory_size": 4,
-            "vp": 14,
-            "vp_income": 7,
-            "squads": [
-                {
-                    "fighter": "Cloud",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 53,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Ryu",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 59,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Rosalina And Luma",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 46,
-                    "turn_taken": false
-                },
-                {
-                    "fighter": "Zelda",
-                    "kills": 0,
-                    "bounty": 1,
-                    "location": 52,
+                    "location": 6,
                     "turn_taken": false
                 }
             ]
@@ -217,26 +45,26 @@
             "name": "Eric",
             "colour": "indigo",
             "hq_id": 61,
-            "resources": 250,
-            "income": 250,
+            "resources": 225,
+            "income": 225,
             "basecost": 250,
             "forcerandom": 1,
             "territory_size": 4,
-            "vp": 14,
+            "vp": 22,
             "vp_income": 7,
             "squads": [
                 {
                     "fighter": "Inkling",
-                    "kills": 0,
+                    "kills": 1,
                     "bounty": 1,
-                    "location": 54,
+                    "location": 60,
                     "turn_taken": false
                 },
                 {
                     "fighter": "Pikachu",
                     "kills": 0,
                     "bounty": 1,
-                    "location": 48,
+                    "location": 47,
                     "turn_taken": false
                 },
                 {
@@ -250,7 +78,193 @@
                     "fighter": "Daisy",
                     "kills": 0,
                     "bounty": 1,
-                    "location": 56,
+                    "location": 49,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Terry",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 55,
+                    "turn_taken": false
+                }
+            ]
+        },
+        {
+            "playernum": "3",
+            "name": "Alex",
+            "colour": "green",
+            "hq_id": 27,
+            "resources": 275,
+            "income": 275,
+            "basecost": 250,
+            "forcerandom": 1,
+            "territory_size": 5,
+            "vp": 23,
+            "vp_income": 9,
+            "squads": [
+                {
+                    "fighter": "Ganondorf",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 21,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Villager",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 30,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Bayonetta",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 37,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Young Link",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 12,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Dark Samus",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 36,
+                    "turn_taken": false
+                }
+            ]
+        },
+        {
+            "playernum": "5",
+            "name": "Alvin",
+            "colour": "darkcyan",
+            "hq_id": 57,
+            "resources": 275,
+            "income": 275,
+            "basecost": 250,
+            "forcerandom": 1,
+            "territory_size": 5,
+            "vp": 23,
+            "vp_income": 9,
+            "squads": [
+                {
+                    "fighter": "Cloud",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 53,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Rosalina And Luma",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 39,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Zelda",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 46,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Villager",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 51,
+                    "turn_taken": false
+                }
+            ]
+        },
+        {
+            "playernum": "2",
+            "name": "Joe",
+            "colour": "red",
+            "hq_id": 5,
+            "resources": 275,
+            "income": 275,
+            "basecost": 250,
+            "forcerandom": 1,
+            "territory_size": 5,
+            "vp": 24,
+            "vp_income": 9,
+            "squads": [
+                {
+                    "fighter": "Ness",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 9,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Ridley",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 16,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Inkling",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 11,
+                    "turn_taken": false
+                }
+            ]
+        },
+        {
+            "playernum": "4",
+            "name": "Kit",
+            "colour": "darkorange",
+            "hq_id": 35,
+            "resources": 275,
+            "income": 275,
+            "basecost": 250,
+            "forcerandom": 1,
+            "territory_size": 5,
+            "vp": 24,
+            "vp_income": 9,
+            "squads": [
+                {
+                    "fighter": "Ness",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 32,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Zelda",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 42,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Cloud",
+                    "kills": 1,
+                    "bounty": 1,
+                    "location": 17,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Pit",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 33,
+                    "turn_taken": false
+                },
+                {
+                    "fighter": "Donkey Kong",
+                    "kills": 0,
+                    "bounty": 1,
+                    "location": 26,
                     "turn_taken": false
                 }
             ]
@@ -259,10 +273,6 @@
     "hexes": [
         {
             "id": 1,
-            "owner": 1
-        },
-        {
-            "id": 2,
             "owner": 1
         },
         {
@@ -280,6 +290,10 @@
         {
             "id": 7,
             "owner": 1
+        },
+        {
+            "id": 9,
+            "owner": 2
         },
         {
             "id": 10,
@@ -318,8 +332,20 @@
             "owner": 3
         },
         {
+            "id": 37,
+            "owner": 3
+        },
+        {
+            "id": 42,
+            "owner": 4
+        },
+        {
             "id": 43,
             "owner": 4
+        },
+        {
+            "id": 49,
+            "owner": 6
         },
         {
             "id": 51,
@@ -327,6 +353,10 @@
         },
         {
             "id": 52,
+            "owner": 5
+        },
+        {
+            "id": 53,
             "owner": 5
         },
         {
@@ -344,10 +374,6 @@
         {
             "id": 58,
             "owner": 5
-        },
-        {
-            "id": 60,
-            "owner": 6
         },
         {
             "id": 61,

@@ -269,16 +269,6 @@ class HexMap(tk.Frame):
         for hex in START_POSITIONS:
             self._hexes[hex - 1].set_structure("HQ", self.create_structure)
 
-            # current_player = player_list[current_player_index]
-            # self._hexes[hex - 1].change_owner(current_player, current_player.get_colour())
-            # for adj_hex in self._hexes[hex - 1].get_adjacency_coords():
-            #     adj_id = self.coords_to_id(adj_hex)
-            #     self._hexes[adj_id - 1].change_owner(current_player, current_player.get_colour())
-            #
-            # current_player.set_hq(self._hexes[hex - 1])
-            #
-            # current_player_index += 1
-
     def initialize_start_locations(self, player_list):
         current_player_index = 0
         for hex in START_POSITIONS:
@@ -290,14 +280,15 @@ class HexMap(tk.Frame):
             current_player.set_hq(self._hexes[hex - 1])
             current_player_index += 1
 
-
     def create_structure(self, hex, structure):
         if structure == "HQ":
-            structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._icon_image_dict["hq"]["map"])
+            structure_id = self.hex_grid.create_image(hex.get_structure_coords(),
+                                                      image=self._parent._icon_image_dict["hq"]["map"])
             hex.set_structure_id(structure_id)
             hex.set_value(100)
         elif structure == "Refinery":
-            structure_id = self.hex_grid.create_image(hex.get_structure_coords(), image=self._parent._icon_image_dict["refinery"]["map"])
+            structure_id = self.hex_grid.create_image(hex.get_structure_coords(),
+                                                      image=self._parent._icon_image_dict["refinery"]["map"])
             hex.set_structure_id(structure_id)
             hex.set_value(200)
         elif structure == "Factory":

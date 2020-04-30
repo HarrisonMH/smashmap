@@ -2,6 +2,7 @@ Banjo & Kazooie
 Bayonetta
 Bowser
 Bowser Jr
+Byleth
 Captain Falcon
 Chrom
 Cloud
@@ -64,6 +65,7 @@ Shulk
 Simon
 Snake
 Sonic
+Terry
 Toon Link
 Villager
 Wario

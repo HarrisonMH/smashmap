@@ -49,7 +49,7 @@ class MainWindow(tk.Frame):
         self._hex_map = HexMap(master, self, 50, self._side_menu_callback, self._end_turn_callback, self.next_player)
         self._start_menu = StartMenu(master, self._fighter_list, self._start_game_callback, self._load_game_callback)
         self._start_menu.grid(column=0, row=0)
-        self._status_menu = tk.Frame(master, width=20, height=20, background="white")
+        self._status_menu = tk.Frame(master, width=500, height=20, background="white")
         self._play_log = PlayLog(self._status_menu, background="white")
         self._play_log.pack()
 
@@ -76,7 +76,8 @@ class MainWindow(tk.Frame):
         self._hex_map.adjust_current_player_display(self._players[0])
         self._in_progress = True
         self._start_menu.destroy()
-        self._side_menu = SideMenu(self._master, self, self._players[0].get_hq(), self._hex_map, self._fighter_image_dict, self._fighter_list, self._icon_image_dict)
+        self._side_menu = SideMenu(self._master, self, self._players[0].get_hq(), self._hex_map,
+                                   self._fighter_image_dict, self._fighter_list, self._icon_image_dict)
         self._side_menu.grid(column=2, row=0, rowspan=2, sticky="n")
         self.bottom_menu = BottomMenu(self._master, self._players, self._end_turn_callback, self._icon_image_dict)
         self.bottom_menu.grid(column=1, row=1, pady=5)

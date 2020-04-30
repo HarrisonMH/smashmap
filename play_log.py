@@ -40,12 +40,11 @@ class PlayLog(tk.Frame):
         self._display_new_text_log()
 
     def _display_new_text_log(self):
-        log_length = len(self._log_list)
         print("Log count: ", len(self._display_log))
         if len(self._display_log) > DISPLAY_SIZE:
             self._display_log[0].destroy()
             del self._display_log[0]
-        self._display_log.append(tk.Label(self, text=self._log_list[-1].get_text_log(), width=45, anchor="w"))
+        self._display_log.append(tk.Label(self, text=self._log_list[-1].get_text_log(), width=45, anchor="w", wraplength=500))
         if self._log_list[-1].get_log_type() == "new_turn":
             self._display_log[-1].config(font=(None, 10, "bold"))
         self._display_log[-1].pack(fill="both")

@@ -111,6 +111,7 @@ class LogLine:
 
     @staticmethod
     def validate_log_arguments(log_type, kwargs):
+        # TODO: Complete log arg validation checks
         if log_type == "move":
             for arg in kwargs:
                 if arg not in REQUIRED_MOVE_ARGUMENTS and arg not in OPTIONAL_MOVE_ARGUMENTS:
